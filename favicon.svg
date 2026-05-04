@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Athos Tecnologia">
+  <rect width="32" height="32" rx="6" fill="#000000"/>
+  <!-- Símbolo A com nós de circuito -->
+  <polygon points="16,4 27,26 5,26" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round"/>
+  <line x1="10" y1="19" x2="22" y2="19" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="16" cy="4" r="2" fill="#ffffff"/>
+  <circle cx="27" cy="26" r="2" fill="#ffffff"/>
+  <circle cx="5" cy="26" r="2" fill="#ffffff"/>
+  <circle cx="10" cy="19" r="1.5" fill="#000000" stroke="#ffffff" stroke-width="1.5"/>
+  <circle cx="22" cy="19" r="1.5" fill="#000000" stroke="#ffffff" stroke-width="1.5"/>
+</svg>
