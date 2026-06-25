@@ -10,7 +10,7 @@
   <link rel="apple-touch-icon" href="favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -30,6 +30,7 @@
       <nav class="athos-nav" id="mainNav" aria-label="Principal">
         <ul>
           <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#automacao">Automação</a></li>
           <li><a href="#sobre">Sobre</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
           <li><a href="#contato">Contato</a></li>
@@ -46,12 +47,28 @@
 
     <!-- Hero -->
     <section class="athos-hero" id="inicio">
+      <canvas class="athos-hero__grid" id="heroGrid" aria-hidden="true"></canvas>
+
+      <!-- Decoração circular direita -->
+      <svg class="athos-hero__decor" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="260" cy="260" r="240" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="180" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="120" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="60"  stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <circle cx="260" cy="20"  r="5" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="500" cy="260" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="260" cy="500" r="5" fill="rgba(255,255,255,0.1)"/>
+        <line x1="260" y1="0" x2="260" y2="520" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <line x1="0" y1="260" x2="520" y2="260" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+      </svg>
+
       <div class="container-athos">
-        <div class="row justify-content-center text-center">
-          <div class="col-lg-10 col-xl-8">
+        <div class="row">
+          <div class="col-lg-7 col-xl-6">
             <p class="athos-hero__eyebrow">Arquitetura · Dados · Produtos Digitais</p>
             <h1 class="athos-hero__title">
-              Engenharia para<br />demandas <span class="athos-highlight">exigentes</span>
+              Engenharia<br />para demandas<br /><span class="athos-highlight">exigentes</span>
             </h1>
             <p class="athos-hero__lead">
               Desenvolvemos soluções digitais com profundidade técnica, segurança e escala.
@@ -137,6 +154,229 @@
 
     <div class="athos-divider"></div>
 
+    <!-- Automação & Auto-Atendimento -->
+    <section class="athos-section athos-section--alt reveal" id="automacao">
+      <div class="container-athos">
+        <div class="athos-section__head text-center mb-5">
+          <div class="athos-yep-badge">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M8 1l1.8 3.6L14 5.6l-3 2.9.7 4.1L8 10.6l-3.7 2-.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+            Parceiro Credenciado YEP Solutions
+          </div>
+          <p class="athos-section__eyebrow mt-3">Hardware + Software</p>
+          <h2 class="athos-section__title">Automação &amp; Auto-Atendimento</h2>
+          <p class="athos-section__sub">Locação de equipamentos industriais com integração técnica completa</p>
+        </div>
+
+        <!-- Cards de produtos -->
+        <div class="row g-4 mb-5">
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="6" width="32" height="36" rx="3" stroke="currentColor" stroke-width="1.5"/>
+                  <rect x="13" y="11" width="22" height="16" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="24" cy="35" r="2.5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M20 31h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">Totens de Auto-Atendimento</h3>
+              <p class="athos-card__text">Terminais interativos para varejo, hospitais e serviços. Redução de filas, autonomia ao usuário final e experiência moderna.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="12" y="10" width="14" height="24" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M26 16h6a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-6" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M16 38h8M20 34v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M32 22l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">Coletores de Dados</h3>
+              <p class="athos-card__text">Equipamentos Zebra, Bluebird e Unitech para inventário, expedição e rastreabilidade. Robustez industrial para ambientes exigentes.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="14" width="32" height="20" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 20h32M16 34v5M32 34v5M12 39h24" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M14 9h20v5H14z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">Impressoras Térmicas</h3>
+              <p class="athos-card__text">Zebra ZT410/ZT411 e TSC MB241 para etiquetagem de alta performance em logística, manufatura e varejo.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6" y="18" width="36" height="22" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M16 18V14a8 8 0 1 1 16 0v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M20 29h8M24 25v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">RFID &amp; Rastreabilidade</h3>
+              <p class="athos-card__text">Leitores e tags RFID para controle de ativos, estoque e acesso. Visibilidade em tempo real de toda a cadeia operacional.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="8" y="10" width="22" height="30" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <rect x="22" y="16" width="18" height="24" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M13 18h12M13 23h12M27 23h8M27 28h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">Tablets &amp; PDV Dupla Tela</h3>
+              <p class="athos-card__text">Tablets industriais e terminais PDV com dupla tela para varejo e hospitalidade. Operação ágil e experiência do cliente aprimorada.</p>
+            </article>
+          </div>
+          <div class="col-md-6 col-lg-4">
+            <article class="athos-card athos-card--yep">
+              <div class="athos-card__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="24" cy="20" r="10" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M24 10V8M24 32v2M14 20h-2M36 20h-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="24" cy="20" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M16 38c0-4.418 3.582-8 8-8s8 3.582 8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-card__title">Câmeras Inteligentes</h3>
+              <p class="athos-card__text">Câmeras Dahua com analytics de vídeo para segurança, controle de fluxo e automação de processos operacionais.</p>
+            </article>
+          </div>
+        </div>
+
+        <!-- Banner de benefícios da locação -->
+        <div class="athos-locacao-banner">
+          <div class="row g-4 align-items-center">
+            <div class="col-lg-7">
+              <p class="athos-locacao-banner__eyebrow">Modelo de locação</p>
+              <h3 class="athos-locacao-banner__title">Sem CAPEX. Operação sempre atualizada.</h3>
+              <p class="athos-locacao-banner__text">
+                Equipamentos novos em locação com manutenção inclusa, SLA flexível e atendimento on-site em todo o Brasil. Para empresas no Lucro Real, o modelo de locação gera desconto médio de 33% na base de cálculo do IR.
+              </p>
+            </div>
+            <div class="col-lg-5">
+              <div class="row g-3">
+                <div class="col-6">
+                  <div class="athos-locacao-stat">
+                    <span class="athos-locacao-stat__num">33%</span>
+                    <span class="athos-locacao-stat__label">Economia média no IR (Lucro Real)</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="athos-locacao-stat">
+                    <span class="athos-locacao-stat__num">100%</span>
+                    <span class="athos-locacao-stat__label">SLA garantido</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="athos-locacao-stat">
+                    <span class="athos-locacao-stat__num">+5k</span>
+                    <span class="athos-locacao-stat__label">Cidades cobertas no Brasil</span>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="athos-locacao-stat">
+                    <span class="athos-locacao-stat__num">0</span>
+                    <span class="athos-locacao-stat__label">Custo adicional de manutenção</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="athos-locacao-banner__cta mt-4">
+            <a class="athos-btn athos-btn--primary" href="#contato">Solicitar proposta de locação</a>
+            <a class="athos-btn athos-btn--ghost" href="https://yepsolutions.com.br" target="_blank" rel="noopener noreferrer">Conhecer portfólio YEP</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="athos-divider"></div>
+
+    <!-- Segmentos -->
+    <section class="athos-section reveal" id="segmentos">
+      <div class="container-athos">
+        <div class="athos-section__head text-center mb-5">
+          <p class="athos-section__eyebrow">Onde atuamos</p>
+          <h2 class="athos-section__title">Segmentos</h2>
+          <p class="athos-section__sub">Hardware + software integrado para os mercados que mais demandam automação</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-4">
+            <div class="athos-segmento">
+              <div class="athos-segmento__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12h36l-3 22H9L6 12z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M6 12l-2-6H2M16 12V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="18" cy="40" r="2" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="30" cy="40" r="2" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+              </div>
+              <h3 class="athos-segmento__title">Varejo</h3>
+              <p class="athos-segmento__text">Totens de autoatendimento, PDV dupla tela, verificadores de preço e coletores para agilizar o caixa, precisar o estoque e elevar a experiência do cliente.</p>
+              <ul class="athos-segmento__tags">
+                <li>Auto-atendimento</li>
+                <li>PDV</li>
+                <li>Estoque</li>
+                <li>Etiquetagem</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="athos-segmento">
+              <div class="athos-segmento__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M24 6C14.059 6 6 14.059 6 24s8.059 18 18 18 18-8.059 18-18S33.941 6 24 6z" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M24 14v10l6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18 6.5C14 9 10 13 8.5 18M30 6.5c4 2.5 8 6.5 9.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-segmento__title">Saúde</h3>
+              <p class="athos-segmento__text">Rastreabilidade de medicamentos, pulseiras RFID, totens de triagem e coletores para prontuário eletrônico. Conformidade e segurança do paciente em primeiro lugar.</p>
+              <ul class="athos-segmento__tags">
+                <li>RFID hospitalar</li>
+                <li>Triagem</li>
+                <li>Rastreabilidade</li>
+                <li>Compliance</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="athos-segmento">
+              <div class="athos-segmento__icon">
+                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="4" y="24" width="28" height="16" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M32 32h8a2 2 0 0 0 2-2V18a2 2 0 0 0-2-2H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="12" cy="42" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="26" cy="42" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  <circle cx="38" cy="42" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M10 24V16l10-8 10 8v8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 class="athos-segmento__title">Logística &amp; Manufatura</h3>
+              <p class="athos-segmento__text">Coletores industriais, impressoras de etiqueta e RFID para controle de recebimento, movimentação e expedição. Visibilidade total do chão de fábrica ao cliente final.</p>
+              <ul class="athos-segmento__tags">
+                <li>WMS</li>
+                <li>Expedição</li>
+                <li>Chão de fábrica</li>
+                <li>Inventário</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="athos-divider"></div>
+
     <!-- Sobre -->
     <section class="athos-section athos-section--alt reveal" id="sobre">
       <div class="container-athos">
@@ -158,19 +398,19 @@
             <div class="row g-3">
               <div class="col-6">
                 <div class="athos-stat">
-                  <span class="athos-stat__num">+50</span>
+                  <span class="athos-stat__num" data-count="50" data-prefix="+" data-suffix="">+50</span>
                   <span class="athos-stat__label">Projetos entregues</span>
                 </div>
               </div>
               <div class="col-6">
                 <div class="athos-stat">
-                  <span class="athos-stat__num">+8</span>
+                  <span class="athos-stat__num" data-count="8" data-prefix="+" data-suffix="">+8</span>
                   <span class="athos-stat__label">Anos de experiência</span>
                 </div>
               </div>
               <div class="col-6">
                 <div class="athos-stat">
-                  <span class="athos-stat__num">99%</span>
+                  <span class="athos-stat__num" data-count="99" data-prefix="" data-suffix="%">99%</span>
                   <span class="athos-stat__label">Uptime garantido</span>
                 </div>
               </div>
@@ -197,25 +437,33 @@
           <p class="athos-section__sub">O que nos diferencia no mercado</p>
         </div>
         <div class="row g-4">
-          <div class="col-md-4">
+          <div class="col-md-6 col-lg-3">
             <div class="athos-diff">
               <div class="athos-diff__line"></div>
               <h3 class="athos-diff__title">Profundidade técnica</h3>
               <p class="athos-diff__text">Times sênior em todas as frentes. Sem terceirização de qualidade crítica.</p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6 col-lg-3">
             <div class="athos-diff">
               <div class="athos-diff__line"></div>
               <h3 class="athos-diff__title">Governança integrada</h3>
               <p class="athos-diff__text">Alinhados com a gestão do Grupo DOC Partners. Decisões coerentes, confidencialidade garantida.</p>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-6 col-lg-3">
             <div class="athos-diff">
               <div class="athos-diff__line"></div>
               <h3 class="athos-diff__title">Foco em resultado</h3>
               <p class="athos-diff__text">Entregamos software que funciona em produção. Métricas reais, impacto mensurável.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="athos-diff athos-diff--yep">
+              <div class="athos-diff__line athos-diff__line--yep"></div>
+              <div class="athos-diff__partner-label">Parceiro Credenciado</div>
+              <h3 class="athos-diff__title">Cobertura nacional via YEP</h3>
+              <p class="athos-diff__text">Hardware de automação em locação com suporte on-site em +5.000 cidades. Você contrata com a Athos, tem alcance de uma líder latino-americana.</p>
             </div>
           </div>
         </div>
@@ -244,6 +492,16 @@
     </section>
 
   </main>
+
+  <!-- Botão flutuante -->
+  <div class="athos-float" id="floatBar" aria-hidden="true">
+    <a href="#contato" class="athos-float__cta">Solicitar proposta</a>
+    <button class="athos-float__top" id="backToTop" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 15V5M5 10l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
 
   <footer class="athos-footer">
     <div class="container-athos">
