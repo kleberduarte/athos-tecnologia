@@ -1,0 +1,2438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Produtos — Athos Tecnologia | Catálogo YEP Solutions</title>
+  <meta name="description" content="Catálogo completo de equipamentos YEP Solutions disponíveis pela Athos Tecnologia: coletores de dados, impressoras térmicas, RFID, autoatendimento e muito mais." />
+  <link rel="canonical" href="https://athostecnologia.com.br/produtos.html" />
+  <meta property="og:title" content="Produtos — Athos Tecnologia" />
+  <meta property="og:description" content="Catálogo YEP Solutions: coletores, impressoras, RFID, autoatendimento." />
+  <meta property="og:url" content="https://athostecnologia.com.br/produtos.html" />
+  <meta name="theme-color" content="#0a0a0f" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="fonts/fonts.css" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ——— Produtos page — estilos específicos ——— */
+
+    /* ——— OVERRIDE B2B: substitui o cyberpunk do styles.css ——— */
+
+    /* Body: remove scanlines e grain, fundo grafite mais quente */
+    body {
+      background-color: #0e1117;
+    }
+    body::before, body::after {
+      display: none !important; /* remove scanlines e grain */
+    }
+
+    /* Novas variáveis B2B */
+    :root {
+      --b2b-bg: #0e1117;
+      --b2b-surface: #141920;
+      --b2b-surface-2: #1c2330;
+      --b2b-border: rgba(255,255,255,0.08);
+      --b2b-border-strong: rgba(255,255,255,0.14);
+      --b2b-blue: #2563eb;
+      --b2b-blue-light: #3b82f6;
+      --b2b-blue-muted: rgba(37,99,235,0.12);
+      --b2b-text: #e2e8f0;
+      --b2b-muted: #94a3b8;
+      --b2b-accent: #00ff88; /* verde Athos — mantém identidade */
+    }
+
+    /* Hero da página de produtos (sem canvas, só CSS grid) */
+    .prod-hero {
+      position: relative;
+      padding-top: calc(var(--header-h) + clamp(4rem, 10vh, 6rem));
+      padding-bottom: clamp(4rem, 10vh, 6rem);
+      overflow: hidden;
+      background-image:
+        linear-gradient(rgba(0,255,136,.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,.022) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    .prod-hero::before {
+      content: "";
+      position: absolute;
+      top: -5%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 500px;
+      background: radial-gradient(ellipse at center,
+        rgba(0,255,136,.055) 0%,
+        rgba(0,255,136,.015) 40%,
+        transparent 70%
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .prod-hero::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 1px; height: 60px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      box-shadow: var(--glow-sm);
+    }
+
+    .prod-hero .container-athos { position: relative; z-index: 1; }
+
+    /* ——— Tabs de filtro ——— */
+    .prod-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    @media (max-width: 767px) {
+      .prod-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--accent) var(--muted);
+        padding-bottom: 0.75rem;
+        gap: 0.4rem;
+      }
+      .prod-tabs::-webkit-scrollbar { height: 3px; }
+      .prod-tabs::-webkit-scrollbar-track { background: var(--muted); }
+      .prod-tabs::-webkit-scrollbar-thumb { background: var(--accent); }
+    }
+
+    .prod-tab-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.45rem 1rem;
+      font-family: var(--font-label);
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: transparent;
+      color: var(--muted-fg);
+      border: 1px solid var(--border);
+      clip-path: polygon(
+        0 var(--chamfer-sm), var(--chamfer-sm) 0,
+        calc(100% - var(--chamfer-sm)) 0, 100% var(--chamfer-sm),
+        100% calc(100% - var(--chamfer-sm)), calc(100% - var(--chamfer-sm)) 100%,
+        var(--chamfer-sm) 100%, 0 calc(100% - var(--chamfer-sm))
+      );
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s, background 0.15s, filter 0.15s;
+      white-space: nowrap;
+    }
+
+    .prod-tab-btn:hover {
+      color: var(--accent);
+      border-color: rgba(0,255,136,.4);
+      background: rgba(0,255,136,.04);
+    }
+
+    .prod-tab-btn.is-active {
+      color: var(--background);
+      background: var(--accent);
+      border-color: var(--accent);
+      filter: drop-shadow(0 0 6px rgba(0,255,136,.5));
+    }
+
+    /* ——— Card de produto ——— */
+    .prod-card {
+      height: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      clip-path: polygon(
+        0 var(--chamfer), var(--chamfer) 0,
+        calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
+        100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
+        var(--chamfer) 100%, 0 calc(100% - var(--chamfer))
+      );
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.25s, filter 0.25s, transform 0.25s var(--ease-out);
+    }
+
+    .prod-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,255,136,.18), transparent);
+      transition: background 0.25s;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .prod-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      filter: drop-shadow(0 0 12px rgba(0,255,136,.38));
+    }
+
+    .prod-card:hover::before {
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    /* Área de imagem */
+    .prod-card__img-wrap {
+      position: relative;
+      height: 180px;
+      background: rgba(0,0,0,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .prod-card__img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* Fallback placeholder */
+    .prod-card__placeholder {
+      width: 80px;
+      height: 80px;
+      color: var(--border);
+      opacity: 0.5;
+    }
+
+    /* Badge categoria (canto superior esquerdo da imagem) */
+    .prod-card__cat-badge {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      z-index: 1;
+      font-family: var(--font-label);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      background: rgba(0,212,255,.10);
+      border: 1px solid rgba(0,212,255,.3);
+      clip-path: polygon(0 3px, 3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px));
+      padding: 0.18rem 0.5rem;
+    }
+
+    /* Badge marca (canto superior direito da imagem) */
+    .prod-card__brand-badge {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      z-index: 1;
+      font-family: var(--font-brand);
+      font-size: 0.52rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted-fg);
+      background: rgba(10,10,15,0.85);
+      border: 1px solid var(--border);
+      clip-path: polygon(0 3px, 3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px));
+      padding: 0.18rem 0.5rem;
+    }
+
+    /* Corpo do card */
+    .prod-card__body {
+      padding: 1.25rem 1.25rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.5rem;
+    }
+
+    .prod-card__name {
+      font-family: var(--font-brand);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--foreground);
+      margin: 0;
+      line-height: 1.3;
+    }
+
+    .prod-card__model {
+      font-family: var(--font-label);
+      font-size: 0.6rem;
+      color: var(--muted-fg);
+      letter-spacing: 0.1em;
+      margin: 0;
+    }
+
+    .prod-card__dif {
+      font-size: 0.8rem;
+      color: var(--muted-fg);
+      line-height: 1.65;
+      margin: 0;
+      flex: 1;
+    }
+
+    .prod-card__action {
+      margin-top: auto;
+      padding-top: 1rem;
+    }
+
+    .prod-card__btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    /* ——— Grid de produtos ——— */
+    #prodGrid { min-height: 200px; }
+
+    /* Nenhum resultado */
+    .prod-empty {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--muted-fg);
+      font-family: var(--font-label);
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ——— Drawer lateral de detalhe do produto ——— */
+    /* IDs têm especificidade (1,0,0) — sobrepõem o body > * { position: relative } de styles.css */
+    #drawerBackdrop,
+    #drawerProduto,
+    #modalOrcamento {
+      position: fixed !important;
+    }
+
+    .prod-drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 1040;
+      background: rgba(10,10,15,0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .prod-drawer-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .prod-drawer {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: min(500px, 100vw);
+      z-index: 1041;
+      background: var(--card);
+      border-left: 1px solid rgba(0,255,136,.2);
+      box-shadow: -8px 0 40px rgba(0,255,136,.06), -2px 0 16px rgba(0,0,0,.6);
+      overflow-y: auto;
+      overflow-x: hidden;
+      transform: translateX(100%);
+      transition: transform 0.38s cubic-bezier(0.22,1,0.36,1);
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) var(--muted);
+      display: flex;
+      flex-direction: column;
+    }
+    .prod-drawer::-webkit-scrollbar { width: 4px; }
+    .prod-drawer::-webkit-scrollbar-track { background: var(--muted); }
+    .prod-drawer::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+    .prod-drawer.is-open { transform: translateX(0); }
+
+    /* Linha neon topo */
+    .prod-drawer-neon-top {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent) 50%, transparent);
+      opacity: 0.7;
+      flex-shrink: 0;
+    }
+
+    /* Header sticky */
+    .prod-drawer-header {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(18,18,26,0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-shrink: 0;
+    }
+
+    .prod-drawer-header-label {
+      font-family: var(--font-label);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--muted-fg);
+    }
+
+    .prod-drawer-close {
+      width: 34px; height: 34px;
+      flex-shrink: 0;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      color: var(--muted-fg);
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 2px;
+      transition: color 0.15s, border-color 0.15s, filter 0.15s;
+    }
+    .prod-drawer-close:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      filter: drop-shadow(0 0 4px rgba(0,255,136,.4));
+    }
+
+    /* Área de imagem */
+    .prod-drawer-img {
+      width: 100%;
+      background: rgba(0,0,0,0.35);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+      min-height: 200px;
+      flex-shrink: 0;
+    }
+    .prod-drawer-img img {
+      max-height: 200px;
+      max-width: 100%;
+      object-fit: contain;
+    }
+    .prod-drawer-img-placeholder {
+      width: 80px; height: 80px;
+      color: var(--border);
+      opacity: 0.35;
+    }
+
+    /* Corpo do drawer */
+    .prod-drawer-body {
+      padding: 1.5rem 1.25rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      flex: 1;
+    }
+
+    .prod-drawer-divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* Badges (reutiliza .prod-modal-badge--cat e .prod-modal-badge--brand) */
+    .prod-modal-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .prod-modal-badge--cat {
+      font-family: var(--font-label);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-cyan);
+      background: rgba(0,212,255,.08);
+      border: 1px solid rgba(0,212,255,.3);
+      padding: 0.22rem 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 2px;
+    }
+
+    .prod-modal-badge--brand {
+      font-family: var(--font-brand);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-fg);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border);
+      padding: 0.22rem 0.65rem;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 2px;
+    }
+
+    .prod-modal-name {
+      font-family: var(--font-brand);
+      font-size: clamp(1.1rem, 4vw, 1.45rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--foreground);
+      line-height: 1.15;
+      margin: 0 0 0.3rem;
+    }
+
+    .prod-modal-model {
+      font-family: var(--font-label);
+      font-size: 0.65rem;
+      color: var(--muted-fg);
+      letter-spacing: 0.12em;
+      margin: 0;
+    }
+
+    /* Specs */
+    .prod-modal-specs-title,
+    .prod-modal-seg-title {
+      font-family: var(--font-label);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 0.6rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid rgba(0,255,136,.15);
+    }
+
+    .prod-modal-specs {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .prod-modal-specs li {
+      font-size: 0.83rem;
+      color: var(--muted-fg);
+      line-height: 1.5;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .prod-modal-specs li::before {
+      content: "▸";
+      color: var(--accent);
+      font-size: 0.7rem;
+      flex-shrink: 0;
+      margin-top: 0.15em;
+      text-shadow: 0 0 4px #00ff88, 0 0 8px rgba(0,255,136,.35);
+    }
+
+    /* Segmentos */
+    .prod-modal-segs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .prod-modal-seg-tag {
+      font-family: var(--font-label);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(0,255,136,.06);
+      border: 1px solid rgba(0,255,136,.22);
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+    }
+
+    /* Ações */
+    .prod-modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    /* Botão WhatsApp */
+    .prod-whatsapp-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.1rem;
+      font-family: var(--font-label);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #25d366;
+      background: rgba(37,211,102,.07);
+      border: 1px solid rgba(37,211,102,.28);
+      text-decoration: none;
+      border-radius: 2px;
+      transition: filter 0.15s, background 0.15s;
+      width: 100%;
+      justify-content: center;
+    }
+    .prod-whatsapp-btn:hover {
+      color: #25d366;
+      background: rgba(37,211,102,.13);
+      filter: drop-shadow(0 0 6px rgba(37,211,102,.4));
+    }
+    .prod-whatsapp-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    /* ——— Modal Orçamento ——— */
+    .prod-modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1050;
+      background: rgba(10,10,15,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s var(--ease);
+    }
+
+    .prod-modal-overlay.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .prod-modal-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      width: 100%;
+      max-width: 860px;
+      max-height: calc(100vh - 2.5rem);
+      overflow-y: auto;
+      position: relative;
+      transform: translateY(18px);
+      transition: transform 0.3s var(--ease-out);
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent) var(--muted);
+    }
+
+    .prod-modal-box::-webkit-scrollbar { width: 4px; }
+    .prod-modal-box::-webkit-scrollbar-track { background: var(--muted); }
+    .prod-modal-box::-webkit-scrollbar-thumb { background: var(--accent); }
+
+    .prod-modal-overlay.is-open .prod-modal-box {
+      transform: translateY(0);
+    }
+
+    .prod-modal-box::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* Botão fechar (modal orçamento) */
+    .prod-modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      z-index: 10;
+      width: 36px; height: 36px;
+      background: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--muted-fg);
+      cursor: pointer;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.15s, filter 0.15s;
+    }
+
+    .prod-modal-close:hover {
+      color: var(--accent);
+      filter: drop-shadow(0 0 5px rgba(0,255,136,.5));
+    }
+
+    /* Conteúdo interno do modal orçamento */
+    .prod-modal-inner {
+      padding: clamp(1.5rem, 4vw, 2.25rem);
+    }
+
+    .prod-modal-placeholder {
+      width: 100px;
+      height: 100px;
+      color: var(--border);
+      opacity: 0.4;
+    }
+
+    .orcamento-modal-box {
+      max-width: 580px;
+    }
+
+    .orcamento-modal-title {
+      font-family: var(--font-brand);
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--foreground);
+      margin-bottom: 0.4rem;
+    }
+
+    .orcamento-modal-sub {
+      font-size: 0.82rem;
+      color: var(--muted-fg);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Campo readonly produto */
+    .athos-form-group input[readonly] {
+      opacity: 0.65;
+      cursor: default;
+      color: var(--accent);
+    }
+
+    /* ——— Seção CTA final ——— */
+    .prod-cta {
+      position: relative;
+      padding: clamp(5rem, 11vw, 8rem) 0;
+      overflow: hidden;
+      background-image:
+        linear-gradient(rgba(0,255,136,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,136,.018) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    .prod-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,255,136,.04) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 50% 0%, rgba(0,212,255,.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .prod-cta .container-athos { position: relative; z-index: 1; }
+
+    /* Nav active link */
+    .athos-nav a.nav-active {
+      color: var(--accent);
+    }
+    .athos-nav a.nav-active::after {
+      width: 100%;
+    }
+
+    /* Scroll margin para âncoras */
+    #catalogo {
+      scroll-margin-top: calc(var(--header-h) + 8px);
+    }
+
+    /* Contador de resultados */
+    .prod-count {
+      font-family: var(--font-label);
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted-fg);
+      margin-bottom: 1.5rem;
+    }
+
+    .prod-count strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Botão submit orçamento disabled */
+    #orcSubmit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    /* ——— TRUST BAR ——— */
+    .b2b-trust-bar {
+      background: var(--b2b-surface);
+      border-top: 1px solid var(--b2b-border);
+      border-bottom: 1px solid var(--b2b-border);
+      padding: 1.25rem 0;
+    }
+    .b2b-trust-inner {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+    }
+    .b2b-trust-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.1rem;
+    }
+    .b2b-trust-num {
+      font-family: var(--font-brand);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--b2b-accent);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .b2b-trust-label {
+      font-family: var(--font-label);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--b2b-muted);
+    }
+    .b2b-trust-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--b2b-border-strong);
+      flex-shrink: 0;
+    }
+    .b2b-trust-partners {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-left: auto;
+    }
+    .b2b-trust-partners-label {
+      font-family: var(--font-label);
+      font-size: 0.58rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--b2b-muted);
+    }
+    .b2b-trust-logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .b2b-fab-badge {
+      font-family: var(--font-label);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      background: var(--b2b-surface-2);
+      border: 1px solid var(--b2b-border-strong);
+      border-radius: 3px;
+      color: var(--b2b-muted);
+    }
+    .b2b-fab-badge.yep {
+      color: var(--b2b-accent);
+      border-color: rgba(0,255,136,.3);
+      background: rgba(0,255,136,.05);
+    }
+    @media (max-width: 767px) {
+      .b2b-trust-partners { margin-left: 0; }
+      .b2b-trust-divider { display: none; }
+    }
+
+    /* ——— ENTERPRISE SECTION ——— */
+    .b2b-enterprise {
+      padding: clamp(5rem, 10vw, 8rem) 0;
+      background: var(--b2b-surface);
+      border-top: 1px solid var(--b2b-border);
+      border-bottom: 1px solid var(--b2b-border);
+    }
+    .b2b-enterprise-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 5vw, 4rem);
+      align-items: start;
+    }
+    @media (max-width: 991px) {
+      .b2b-enterprise-grid { grid-template-columns: 1fr; }
+    }
+    .b2b-enterprise-eyebrow {
+      font-family: var(--font-label);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--b2b-blue-light);
+      margin-bottom: 0.75rem;
+    }
+    .b2b-enterprise-title {
+      font-family: var(--font-brand);
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--b2b-text);
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .b2b-enterprise-sub {
+      font-size: 0.92rem;
+      color: var(--b2b-muted);
+      line-height: 1.75;
+      margin-bottom: 1.75rem;
+      max-width: 45ch;
+    }
+    .b2b-enterprise-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .b2b-enterprise-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.88rem;
+      color: var(--b2b-text);
+    }
+    .b2b-enterprise-list li svg {
+      width: 18px; height: 18px;
+      flex-shrink: 0;
+      color: var(--b2b-accent);
+      margin-top: 0.1em;
+    }
+    .b2b-enterprise-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .b2b-enterprise-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .b2b-ent-card {
+      background: var(--b2b-surface-2);
+      border: 1px solid var(--b2b-border);
+      border-radius: 6px;
+      padding: 1.25rem;
+      transition: border-color 0.2s;
+    }
+    .b2b-ent-card:hover { border-color: var(--b2b-border-strong); }
+    .b2b-ent-card-icon {
+      width: 36px; height: 36px;
+      background: var(--b2b-blue-muted);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--b2b-blue-light);
+      margin-bottom: 0.75rem;
+    }
+    .b2b-ent-card-icon svg { width: 18px; height: 18px; }
+    .b2b-ent-card-title {
+      font-family: var(--font-brand);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--b2b-text);
+      margin-bottom: 0.5rem;
+    }
+    .b2b-ent-card-text {
+      font-size: 0.8rem;
+      color: var(--b2b-muted);
+      line-height: 1.6;
+      margin: 0;
+    }
+    @media (max-width: 575px) {
+      .b2b-enterprise-cards { grid-template-columns: 1fr; }
+    }
+
+    /* ——— LGPD BADGE ——— */
+    .b2b-lgpd-badge {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.65rem 0.85rem;
+      background: rgba(37,99,235,0.07);
+      border: 1px solid rgba(37,99,235,0.2);
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+      font-size: 0.78rem;
+      color: var(--b2b-muted);
+      line-height: 1.5;
+    }
+    .b2b-lgpd-badge svg {
+      width: 16px; height: 16px;
+      flex-shrink: 0;
+      color: var(--b2b-blue-light);
+      margin-top: 0.1em;
+    }
+    .b2b-lgpd-badge strong { color: var(--b2b-text); }
+
+    /* ——— FOOTER B2B ——— */
+    .b2b-footer {
+      background: var(--b2b-surface) !important;
+      border-top: 1px solid var(--b2b-border-strong) !important;
+      padding: clamp(3rem, 6vw, 5rem) 0 0 !important;
+    }
+    .b2b-footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr;
+      gap: 2.5rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid var(--b2b-border);
+    }
+    @media (max-width: 767px) {
+      .b2b-footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+    .b2b-footer-logo { margin-bottom: 1rem; display: block; }
+    .b2b-footer-desc {
+      font-size: 0.82rem;
+      color: var(--b2b-muted);
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+      max-width: 36ch;
+    }
+    .b2b-footer-cnpj {
+      font-family: var(--font-label);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--b2b-muted);
+      opacity: 0.7;
+    }
+    .b2b-footer-heading {
+      font-family: var(--font-brand);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--b2b-text);
+      margin-bottom: 1rem;
+    }
+    .b2b-footer-links {
+      list-style: none;
+      padding: 0; margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .b2b-footer-links li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.82rem;
+      color: var(--b2b-muted);
+    }
+    .b2b-footer-links li svg { width: 14px; height: 14px; flex-shrink: 0; margin-top: 0.2em; }
+    .b2b-footer-links a { color: var(--b2b-muted); transition: color 0.15s; }
+    .b2b-footer-links a:hover { color: var(--b2b-accent); }
+    .b2b-footer-links--nav li { display: block; }
+    .b2b-footer-links--nav a { display: block; padding: 0.1rem 0; }
+    .b2b-footer-bottom {
+      padding: 1.5rem 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .b2b-footer-bottom p {
+      font-size: 0.75rem;
+      color: var(--b2b-muted);
+      opacity: 0.7;
+    }
+    .b2b-footer-bottom a { color: var(--b2b-accent); }
+    .b2b-footer-legal { font-size: 0.68rem !important; opacity: 0.5 !important; }
+
+    /* ——— CARD B2B override: sem clip-path, border-radius limpo ——— */
+    .prod-card {
+      clip-path: none !important;
+      border-radius: 6px !important;
+      background: var(--b2b-surface) !important;
+      border-color: var(--b2b-border) !important;
+    }
+    .prod-card:hover {
+      border-color: var(--b2b-blue-light) !important;
+      filter: none !important;
+      box-shadow: 0 4px 24px rgba(37,99,235,0.15) !important;
+      transform: translateY(-3px) !important;
+    }
+    .prod-card::before { display: none !important; }
+
+    /* Tabs sem clip-path */
+    .prod-tab-btn {
+      clip-path: none !important;
+      border-radius: 4px !important;
+    }
+
+    /* Hero mais limpo */
+    .prod-hero {
+      background-image: none !important;
+      background: linear-gradient(180deg, #0e1117 0%, #141920 100%) !important;
+    }
+    .prod-hero::after { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Skip Navigation (acessibilidade — WCAG 2.4.1) -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <!-- Logo background -->
+  <div class="athos-logo-bg" aria-hidden="true"></div>
+
+  <header class="athos-header" id="siteHeader">
+    <div class="athos-header__bar">
+      <a href="index.html" class="athos-logo-link" aria-label="Athos Tecnologia — início">
+        <img src="logo-athos.png" alt="Athos Tecnologia" width="180" height="36" />
+      </a>
+      <button type="button" class="athos-nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="athos-nav" id="mainNav" aria-label="Principal">
+        <ul>
+          <li><a href="index.html#servicos">Serviços</a></li>
+          <li><a href="index.html#automacao">Automação</a></li>
+          <li><a href="index.html#sobre">Sobre</a></li>
+          <li><a href="index.html#diferenciais">Diferenciais</a></li>
+          <li><a href="produtos.html" class="nav-active" aria-current="page">Produtos</a></li>
+          <li><a href="index.html#contato">Contato</a></li>
+          <li class="d-lg-none pt-2">
+            <a class="athos-header__cta athos-header__cta--block" href="index.html#contato">Fale conosco</a>
+          </li>
+          <li class="d-lg-none pt-1">
+            <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta athos-header__cta--block">Console Chamados</a>
+          </li>
+        </ul>
+      </nav>
+      <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta d-none d-lg-inline-flex">Console Chamados</a>
+      <a class="athos-header__cta" href="index.html#contato">Fale conosco</a>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ====================================================
+         HERO — Parceiro YEP
+    ===================================================== -->
+    <section class="prod-hero" aria-labelledby="heroTitle">
+      <!-- Decoração circular direita -->
+      <svg class="athos-hero__decor" viewBox="0 0 520 520" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="260" cy="260" r="240" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="180" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="120" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="60"  stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+        <circle cx="260" cy="20"  r="5" fill="rgba(255,255,255,0.25)"/>
+        <circle cx="500" cy="260" r="5" fill="rgba(255,255,255,0.15)"/>
+        <circle cx="260" cy="500" r="5" fill="rgba(255,255,255,0.1)"/>
+        <line x1="260" y1="0" x2="260" y2="520" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <line x1="0" y1="260" x2="520" y2="260" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+        <circle cx="260" cy="260" r="8" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" fill="none"/>
+      </svg>
+
+      <div class="container-athos">
+        <div class="row">
+          <div class="col-lg-7 col-xl-6">
+            <!-- Badge YEP -->
+            <div class="athos-yep-badge mb-4">
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 1l1.8 3.6L14 5.6l-3 2.9.7 4.1L8 10.6l-3.7 2-.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              </svg>
+              Parceiro Credenciado YEP Solutions
+            </div>
+
+            <p class="athos-hero__eyebrow">Catálogo completo de equipamentos</p>
+
+            <h1 class="athos-hero__title" id="heroTitle">
+              Catálogo de<br /><span class="athos-highlight">Equipamentos</span>
+            </h1>
+
+            <p class="athos-hero__lead">
+              Como parceiro credenciado YEP Solutions, a Athos Tecnologia oferece a linha completa de equipamentos de automação — com a vantagem de contar com o mesmo time que desenvolve a integração e o software por trás da sua operação. Compre ou alugue, com suporte técnico de ponta a ponta.
+            </p>
+
+            <div class="athos-hero__actions">
+              <a class="athos-btn athos-btn--primary" href="#catalogo">Ver catálogo</a>
+              <button type="button" class="athos-btn athos-btn--ghost" id="heroOrcamentoBtn">Solicitar orçamento</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="b2b-trust-bar">
+      <div class="container-athos">
+        <div class="b2b-trust-inner">
+          <!-- Stat: anos -->
+          <div class="b2b-trust-stat">
+            <span class="b2b-trust-num">+8</span>
+            <span class="b2b-trust-label">Anos de mercado</span>
+          </div>
+          <div class="b2b-trust-divider"></div>
+          <!-- Stat: projetos -->
+          <div class="b2b-trust-stat">
+            <span class="b2b-trust-num">+500</span>
+            <span class="b2b-trust-label">Projetos entregues</span>
+          </div>
+          <div class="b2b-trust-divider"></div>
+          <!-- Stat: SLA -->
+          <div class="b2b-trust-stat">
+            <span class="b2b-trust-num">99%</span>
+            <span class="b2b-trust-label">SLA de uptime</span>
+          </div>
+          <div class="b2b-trust-divider"></div>
+          <!-- Stat: suporte -->
+          <div class="b2b-trust-stat">
+            <span class="b2b-trust-num">24/7</span>
+            <span class="b2b-trust-label">Suporte técnico</span>
+          </div>
+          <div class="b2b-trust-divider"></div>
+          <!-- Parceiros fabricantes -->
+          <div class="b2b-trust-partners">
+            <span class="b2b-trust-partners-label">Parceiros fabricantes:</span>
+            <div class="b2b-trust-logos">
+              <span class="b2b-fab-badge">Zebra</span>
+              <span class="b2b-fab-badge">Dahua</span>
+              <span class="b2b-fab-badge">Bluebird</span>
+              <span class="b2b-fab-badge">Chainway</span>
+              <span class="b2b-fab-badge">Generalscan</span>
+              <span class="b2b-fab-badge yep">YEP Solutions</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="athos-divider"></div>
+
+    <!-- ====================================================
+         CATÁLOGO
+    ===================================================== -->
+    <section class="athos-section reveal" id="catalogo" aria-labelledby="catalogoTitle">
+      <div class="container-athos">
+
+        <div class="athos-section__head text-center mb-5">
+          <p class="athos-section__eyebrow">Portfólio YEP Solutions</p>
+          <h2 class="athos-section__title" id="catalogoTitle">Catálogo de Produtos</h2>
+          <p class="athos-section__sub">Equipamentos homologados com suporte técnico da Athos</p>
+        </div>
+
+        <!-- Tabs de filtro -->
+        <div class="prod-tabs" id="prodTabs" role="tablist" aria-label="Filtrar por categoria"></div>
+
+        <!-- Contador -->
+        <p class="prod-count" id="prodCount" aria-live="polite" aria-atomic="true"></p>
+
+        <!-- Grid de cards -->
+        <div class="row g-4" id="prodGrid" role="list"></div>
+
+      </div>
+    </section>
+
+    <div class="athos-divider"></div>
+
+    <!-- ====================================================
+         SEÇÃO ENTERPRISE — Cotação por volume
+    ===================================================== -->
+    <section class="b2b-enterprise" id="enterprise" aria-labelledby="enterpriseTitle">
+      <div class="container-athos">
+        <div class="b2b-enterprise-grid">
+
+          <!-- Coluna esquerda: copy -->
+          <div class="b2b-enterprise-copy">
+            <p class="b2b-enterprise-eyebrow">Para empresas</p>
+            <h2 class="b2b-enterprise-title" id="enterpriseTitle">Compra enterprise<br>e locação por volume</h2>
+            <p class="b2b-enterprise-sub">
+              Atendimento dedicado para gestores de TI, compradores corporativos e revendas.
+              Cotação em 24h, gerente de conta exclusivo e suporte técnico pós-venda.
+            </p>
+
+            <ul class="b2b-enterprise-list">
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Cotação por volume com desconto progressivo
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Gerente de conta dedicado (sem fila de suporte)
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Datasheet técnico em PDF por produto
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Opção de locação operacional (OPEX) com SLA incluso
+              </li>
+              <li>
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 10l4 4 6-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Nota fiscal + contrato de manutenção preventiva
+              </li>
+            </ul>
+
+            <div class="b2b-enterprise-actions">
+              <a href="#" onclick="window._openOrcamento('Enterprise — Cotação por Volume'); return false;" class="athos-btn athos-btn--primary">
+                Solicitar cotação enterprise
+              </a>
+              <a href="index.html#contato" class="athos-btn athos-btn--ghost">
+                Falar com gerente
+              </a>
+            </div>
+          </div>
+
+          <!-- Coluna direita: cards de benefício -->
+          <div class="b2b-enterprise-cards">
+            <div class="b2b-ent-card">
+              <div class="b2b-ent-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="3" y="6" width="18" height="13" rx="2" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M8 6V5a4 4 0 018 0v1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  <path d="M12 12v2m0 0v2m0-2h2m-2 0H10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="b2b-ent-card-title">Cotação em 24h</h3>
+              <p class="b2b-ent-card-text">Envie sua lista de equipamentos e receba proposta comercial detalhada em até 1 dia útil.</p>
+            </div>
+
+            <div class="b2b-ent-card">
+              <div class="b2b-ent-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="b2b-ent-card-title">Gerente dedicado</h3>
+              <p class="b2b-ent-card-text">Acesso direto por WhatsApp e e-mail. Sem bot, sem fila — atendimento humano para decisões de compra.</p>
+            </div>
+
+            <div class="b2b-ent-card">
+              <div class="b2b-ent-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V9l-5-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M14 3v6h5M9 13h6M9 17h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 class="b2b-ent-card-title">Datasheets PDF</h3>
+              <p class="b2b-ent-card-text">Documentação técnica completa por produto para homologação interna, TI e comitê de compras.</p>
+            </div>
+
+            <div class="b2b-ent-card">
+              <div class="b2b-ent-card-icon">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 class="b2b-ent-card-title">SLA garantido</h3>
+              <p class="b2b-ent-card-text">Contrato com nível de serviço definido, manutenção preventiva inclusa e reposição de equipamentos.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================
+         CTA FINAL
+    ===================================================== -->
+    <section class="prod-cta" aria-labelledby="ctaFinalTitle">
+      <div class="container-athos">
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-xl-7 text-center">
+            <div class="athos-yep-badge mb-4" style="display:inline-flex;">
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M8 1l1.8 3.6L14 5.6l-3 2.9.7 4.1L8 10.6l-3.7 2-.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+              </svg>
+              Parceiro YEP Solutions
+            </div>
+            <h2 class="athos-cta__title" id="ctaFinalTitle">
+              Não encontrou o que procura?
+            </h2>
+            <p class="athos-cta__text">
+              Não encontrou o equipamento que precisa? Fale com nossos especialistas — nosso portfólio YEP é ainda maior.
+            </p>
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+              <a class="athos-btn athos-btn--primary athos-btn--lg" href="index.html#contato">Falar com especialista</a>
+              <a class="athos-btn athos-btn--ghost athos-btn--lg" href="index.html#automacao">Ver locação de hardware</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Botão flutuante -->
+  <div class="athos-float" id="floatBar" aria-hidden="true">
+    <a href="index.html#contato" class="athos-float__cta">Solicitar proposta</a>
+    <button class="athos-float__top" id="backToTop" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M10 15V5M5 10l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <footer class="athos-footer b2b-footer">
+    <div class="container-athos">
+      <div class="b2b-footer-grid">
+
+        <!-- Coluna 1: Identidade -->
+        <div class="b2b-footer-col b2b-footer-col--brand">
+          <img src="logo-athos.png" alt="Athos Tecnologia" width="140" height="28" class="b2b-footer-logo" />
+          <p class="b2b-footer-desc">
+            Revenda autorizada YEP Solutions e integradora de soluções de hardware para varejo,
+            saúde, logística e manufatura.
+          </p>
+          <p class="b2b-footer-cnpj">CNPJ: XX.XXX.XXX/0001-XX</p>
+        </div>
+
+        <!-- Coluna 2: Contato -->
+        <div class="b2b-footer-col">
+          <h4 class="b2b-footer-heading">Contato comercial</h4>
+          <ul class="b2b-footer-links">
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5h14a1 1 0 011 1v8a1 1 0 01-1 1H3a1 1 0 01-1-1V6a1 1 0 011-1z" stroke="currentColor" stroke-width="1.2"/><path d="M3 6l7 5 7-5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              <a href="mailto:comercial@athostecnologia.com.br">comercial@athostecnologia.com.br</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 5a2 2 0 012-2h2.28a1 1 0 01.95.68l1.1 3.28a1 1 0 01-.23 1.04l-1.4 1.4a11 11 0 005.66 5.66l1.4-1.4a1 1 0 011.04-.23l3.28 1.1A1 1 0 0120 15.7V18a2 2 0 01-2 2C6.48 20 0 13.52 0 5a2 2 0 012-2h1z" stroke="currentColor" stroke-width="1.2"/></svg>
+              <a href="tel:+551100000000">(11) 0000-0000</a>
+            </li>
+            <li>
+              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 11a2 2 0 100-4 2 2 0 000 4z" stroke="currentColor" stroke-width="1.2"/><path d="M16.24 14.24a8 8 0 10-12.48 0M10 20v-3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+              São Paulo, SP — Brasil
+            </li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Links rápidos -->
+        <div class="b2b-footer-col">
+          <h4 class="b2b-footer-heading">Catálogo</h4>
+          <ul class="b2b-footer-links b2b-footer-links--nav">
+            <li><a href="produtos.html">Todos os produtos</a></li>
+            <li><a href="produtos.html#enterprise">Compra enterprise</a></li>
+            <li><a href="index.html#automacao">Locação de equipamentos</a></li>
+            <li><a href="index.html#contato">Solicitar proposta</a></li>
+            <li><a href="index.html">Site institucional</a></li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="b2b-footer-bottom">
+        <p>© <span id="y"></span> Athos Tecnologia — Empresa do Grupo <a href="../../index.html">DOC Partners</a>. Todos os direitos reservados.</p>
+        <p class="b2b-footer-legal">Revenda autorizada sujeita a disponibilidade de estoque e aprovação de crédito. Imagens meramente ilustrativas.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====================================================
+       DRAWER LATERAL DE DETALHE DO PRODUTO
+  ===================================================== -->
+  <!-- Backdrop -->
+  <div id="drawerBackdrop" class="prod-drawer-backdrop" aria-hidden="true"></div>
+
+  <!-- Drawer -->
+  <aside id="drawerProduto" class="prod-drawer" role="dialog" aria-modal="true" aria-labelledby="drawerNome" aria-hidden="true">
+    <div class="prod-drawer-neon-top" aria-hidden="true"></div>
+
+    <!-- Header sticky com botão fechar -->
+    <div class="prod-drawer-header">
+      <span class="prod-drawer-header-label">Detalhes do produto</span>
+      <button class="prod-drawer-close" id="drawerClose" aria-label="Fechar painel de detalhes">×</button>
+    </div>
+
+    <!-- Imagem -->
+    <div class="prod-drawer-img" id="drawerImgWrap">
+      <!-- preenchido via JS -->
+    </div>
+
+    <!-- Corpo -->
+    <div class="prod-drawer-body">
+      <!-- Badges categoria + marca -->
+      <div class="prod-modal-badges" id="drawerBadges"></div>
+
+      <!-- Nome e modelo -->
+      <div>
+        <h2 class="prod-modal-name" id="drawerNome"></h2>
+        <p class="prod-modal-model" id="drawerModelo"></p>
+      </div>
+
+      <div class="prod-drawer-divider" aria-hidden="true"></div>
+
+      <!-- Especificações -->
+      <div>
+        <p class="prod-modal-specs-title">Especificações Técnicas</p>
+        <ul class="prod-modal-specs" id="drawerSpecs"></ul>
+      </div>
+
+      <!-- Segmentos -->
+      <div>
+        <p class="prod-modal-seg-title">Segmentos de Uso</p>
+        <div class="prod-modal-segs" id="drawerSegs"></div>
+      </div>
+
+      <div class="prod-drawer-divider" aria-hidden="true"></div>
+
+      <!-- Ações -->
+      <div class="prod-modal-actions" id="drawerActions"></div>
+
+      <!-- Botão WhatsApp -->
+      <!-- ATENÇÃO: substitua 5511XXXXXXXXX pelo número de WhatsApp da Athos Tecnologia -->
+      <a
+        class="prod-whatsapp-btn"
+        id="drawerWhatsapp"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Contato via WhatsApp
+      </a>
+    </div>
+  </aside>
+
+  <!-- ====================================================
+       MODAL DE ORÇAMENTO
+  ===================================================== -->
+  <div class="prod-modal-overlay" id="modalOrcamento" role="dialog" aria-modal="true" aria-labelledby="orcamentoTitle" aria-hidden="true">
+    <div class="prod-modal-box orcamento-modal-box">
+      <button class="prod-modal-close" id="modalOrcClose" aria-label="Fechar formulário de orçamento">×</button>
+
+      <div class="prod-modal-inner">
+        <div class="b2b-lgpd-badge">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M10 2l6 2.5V10c0 4-6 8-6 8S4 14 4 10V4.5L10 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Dados protegidos conforme a <strong>LGPD</strong> (Lei 13.709/2018). Nunca compartilhamos suas informações.</span>
+        </div>
+        <div class="athos-yep-badge mb-3" style="display:inline-flex;">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8 1l1.8 3.6L14 5.6l-3 2.9.7 4.1L8 10.6l-3.7 2-.7-4.1-3-2.9 4.2-.6z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+          </svg>
+          Solicitar Orçamento
+        </div>
+        <h2 class="orcamento-modal-title" id="orcamentoTitle">Solicitar Orçamento</h2>
+        <p class="orcamento-modal-sub">Preencha os dados abaixo e entraremos em contato em até 24h úteis.</p>
+
+        <!-- CONFIGURAÇÃO: substitua YOUR_FORM_ID pelo ID do seu formulário em formspree.io -->
+        <form
+          class="athos-contact-form"
+          id="orcamentoForm"
+          action="https://formspree.io/f/YOUR_FORM_ID"
+          method="POST"
+          novalidate
+          aria-label="Formulário de orçamento"
+          style="clip-path:none; border:none; background:transparent; padding:0;"
+        >
+          <!-- Honeypot anti-spam -->
+          <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off" />
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="athos-form-group">
+                <label for="orc-nome">Nome completo <span aria-hidden="true">*</span></label>
+                <input
+                  type="text"
+                  id="orc-nome"
+                  name="nome"
+                  required
+                  minlength="3"
+                  maxlength="100"
+                  placeholder="Seu nome"
+                  autocomplete="name"
+                  aria-required="true"
+                />
+                <span class="athos-form-error-msg" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="athos-form-group">
+                <label for="orc-empresa">Empresa <span aria-hidden="true">*</span></label>
+                <input
+                  type="text"
+                  id="orc-empresa"
+                  name="empresa"
+                  required
+                  minlength="2"
+                  maxlength="100"
+                  placeholder="Nome da empresa"
+                  autocomplete="organization"
+                  aria-required="true"
+                />
+                <span class="athos-form-error-msg" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="athos-form-group">
+                <label for="orc-email">E-mail <span aria-hidden="true">*</span></label>
+                <input
+                  type="email"
+                  id="orc-email"
+                  name="email"
+                  required
+                  placeholder="voce@empresa.com"
+                  autocomplete="email"
+                  aria-required="true"
+                />
+                <span class="athos-form-error-msg" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="athos-form-group">
+                <label for="orc-telefone">Telefone / WhatsApp <span aria-hidden="true">*</span></label>
+                <input
+                  type="tel"
+                  id="orc-telefone"
+                  name="telefone"
+                  required
+                  minlength="8"
+                  maxlength="20"
+                  placeholder="(11) 9 0000-0000"
+                  autocomplete="tel"
+                  aria-required="true"
+                />
+                <span class="athos-form-error-msg" aria-live="polite"></span>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="athos-form-group">
+                <label for="orc-produto">Produto de interesse</label>
+                <input
+                  type="text"
+                  id="orc-produto"
+                  name="produto"
+                  readonly
+                  placeholder="Nenhum produto selecionado"
+                  aria-readonly="true"
+                />
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="athos-form-group">
+                <label for="orc-mensagem">Mensagem <span aria-hidden="true">*</span></label>
+                <textarea
+                  id="orc-mensagem"
+                  name="mensagem"
+                  required
+                  minlength="10"
+                  maxlength="2000"
+                  rows="4"
+                  placeholder="Descreva sua necessidade, quantidade ou dúvida..."
+                  aria-required="true"
+                ></textarea>
+                <span class="athos-form-error-msg" aria-live="polite"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-4">
+            <button type="submit" class="athos-btn athos-btn--primary athos-btn--lg" id="orcSubmit">
+              Enviar orçamento
+            </button>
+          </div>
+        </form>
+
+        <!-- Estado de sucesso -->
+        <div id="orcSuccess" class="athos-form-feedback athos-form-feedback--success" hidden role="status" aria-live="polite">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <p>Orçamento enviado com sucesso! Entraremos em contato em até <strong>24h úteis</strong>.</p>
+        </div>
+
+        <!-- Estado de erro -->
+        <div id="orcError" class="athos-form-feedback athos-form-feedback--error" hidden role="alert" aria-live="assertive">
+          <p>Ocorreu um problema ao enviar. Tente novamente ou entre em contato: <a href="mailto:contato@athostecnologia.com.br">contato@athostecnologia.com.br</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="main.js"></script>
+
+  <!-- ====================================================
+       JAVASCRIPT — Catálogo de Produtos
+  ===================================================== -->
+  <script>
+  (function () {
+    'use strict';
+
+    /* ——— Dados de categorias ——— */
+    const CATEGORIAS = [
+      { slug: 'todos',           label: 'Todos' },
+      { slug: 'coletores',       label: 'Coletores de Dados' },
+      { slug: 'leitores',        label: 'Leitores de Código de Barras' },
+      { slug: 'impressoras',     label: 'Impressoras Térmicas' },
+      { slug: 'autoatendimento', label: 'Autoatendimento' },
+      { slug: 'cameras',         label: 'Câmeras Inteligentes' },
+      { slug: 'enterprise',      label: 'Enterprise' },
+      { slug: 'tablets',         label: 'Tablets Industriais' },
+      { slug: 'rfid',            label: 'RFID' },
+      { slug: 'complementares',  label: 'Soluções Complementares' },
+    ];
+
+    /* ——— Dados dos produtos ——— */
+    const PRODUTOS = [
+      /* ——— COLETORES DE DADOS ——— */
+      {
+        id: 'c66',
+        nome: 'C66',
+        modelo: 'C66-V3-SE4710-BR',
+        marca: 'Chainway',
+        categoria: 'coletores',
+        diferencial: 'Android 13 com leitor Zebra SE4710 — alta precisão em varejo e logística',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-c66-nodroped.webp',
+        specs: [
+          'Android 13',
+          'Tela 5.5"',
+          '4G / Wi-Fi / Bluetooth / GPS',
+          '3GB RAM · 32GB',
+          'Leitor 2D Zebra SE4710',
+          'Câmera integrada',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Governo'],
+        descricao: 'Coletor de dados Android 13 com leitor Zebra SE4710 de alta precisão. Ideal para varejo e logística.',
+      },
+      {
+        id: 'c71',
+        nome: 'C71',
+        modelo: 'C71-AE3-SE2707-CBM-E3-BR',
+        marca: 'Chainway',
+        categoria: 'coletores',
+        diferencial: 'NFC e 4G com câmera 13MP — mobilidade total para operações de campo',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-71-nodroped.webp',
+        specs: [
+          'Android 9',
+          'Tela 5.0"',
+          '4G / Wi-Fi / Bluetooth / AGPS',
+          'NFC',
+          'Câmera 13MP',
+          'Leitor 2D',
+          'Dual SIM',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Aéreo', 'Governo'],
+        descricao: 'Coletor com NFC, 4G e câmera 13MP para máxima mobilidade em operações de campo.',
+      },
+      {
+        id: 'cf550',
+        nome: 'CF550',
+        modelo: 'CF550-A4LAW-BR',
+        marca: 'Bluebird',
+        categoria: 'coletores',
+        diferencial: 'Android 11 com NFC e leitor 1D/2D — versatilidade para múltiplos setores',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-cf550-nodroped.webp',
+        specs: [
+          'Android 11',
+          'Tela 5.45"',
+          '4G / Wi-Fi / Bluetooth',
+          '3GB RAM · 32GB',
+          'NFC',
+          'Leitor 1D/2D',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Governo'],
+        descricao: 'Coletor Bluebird Android 11 com NFC e leitor 1D/2D para múltiplos setores.',
+      },
+      {
+        id: 's70',
+        nome: 'S70',
+        modelo: 'S70-ANLB',
+        marca: 'Bluebird',
+        categoria: 'coletores',
+        diferencial: 'Octa-Core 2.7 GHz com 6GB RAM — processamento premium para operações intensas',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-s70-nodroped.webp',
+        specs: [
+          'Android 12',
+          'Tela 6.0"',
+          'Octa-Core 2.7 GHz',
+          '6GB RAM · 64GB',
+          'Wi-Fi / Bluetooth / NFC',
+          'Leitor 2D',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Aéreo', 'Governo'],
+        descricao: 'Coletor premium Bluebird com processador Octa-Core e 6GB RAM para operações intensas.',
+      },
+      {
+        id: 'c6000',
+        nome: 'C6000',
+        modelo: 'C6000-QE-SE4710-BR',
+        marca: 'Chainway',
+        categoria: 'coletores',
+        diferencial: 'Android 13 com câmera 13MP e GPS — rastreabilidade completa em campo',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-c6000-nodroped.webp',
+        specs: [
+          'Android 13',
+          '4G / Bluetooth / GPS',
+          '3GB RAM · 32GB',
+          'Leitor 2D SE4710',
+          'Câmera 13MP',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Governo'],
+        descricao: 'Coletor Chainway Android 13 com câmera 13MP e GPS para rastreabilidade total.',
+      },
+      {
+        id: 'ef501r',
+        nome: 'EF501R',
+        modelo: 'EF501R-A4LKW-BR',
+        marca: 'Bluebird',
+        categoria: 'coletores',
+        diferencial: 'Dual SIM e câmera 13MP — conectividade contínua para equipes móveis',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-ef501r-nodroped.webp',
+        specs: [
+          'Android 9',
+          'Tela 5.0"',
+          '4G / Wi-Fi / Bluetooth / AGPS',
+          'Câmera 13MP',
+          'NFC',
+          'Leitor 2D',
+          'Dual SIM',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Aéreo', 'Governo'],
+        descricao: 'Coletor Bluebird com Dual SIM e câmera 13MP para equipes móveis com conectividade contínua.',
+      },
+
+      /* ——— IMPRESSORAS TÉRMICAS ——— */
+      {
+        id: 'zq520',
+        nome: 'ZQ520 – ZQ521',
+        modelo: 'ZQ52-BUE000L-L3-BR',
+        marca: 'Zebra',
+        categoria: 'impressoras',
+        diferencial: 'Impressora móvel com bateria 3250mAh — etiquetagem portátil onde precisar',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-zq520-nodroped.webp',
+        specs: [
+          'Resolução 203 dpi · 104mm',
+          'Display LCD 5"',
+          '4GB RAM · 4GB Flash',
+          'USB e Bluetooth',
+          'Bateria 3250mAh',
+          'ZPL / EPL / CPCL',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística'],
+        descricao: 'Impressora térmica móvel Zebra com bateria de longa duração para etiquetagem portátil.',
+      },
+      {
+        id: 'zt410',
+        nome: 'ZT410 – ZT411',
+        modelo: 'ZT41142-T0A0000Z-BR',
+        marca: 'Zebra',
+        categoria: 'impressoras',
+        diferencial: '14 pol/s e conectividade completa — impressão industrial de alta velocidade',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-zt410-nodroped.webp',
+        specs: [
+          'Resolução 203 DPI · 104mm',
+          'Velocidade 14 pol/s',
+          '256MB DRAM · 512MB Flash',
+          'Serial / USB / Ethernet / Bluetooth',
+          'ZPL / EPL',
+        ],
+        segmentos: ['Manufatura', 'Logística', 'Varejo', 'Saúde'],
+        descricao: 'Impressora industrial Zebra de alta velocidade com conectividade completa para ambientes exigentes.',
+      },
+      {
+        id: 'zd230',
+        nome: 'ZD230',
+        modelo: 'ZD23042-30AC00EZ-BR',
+        marca: 'Zebra',
+        categoria: 'impressoras',
+        diferencial: 'USB e Ethernet nativos — conectividade de rede sem adaptadores adicionais',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-zd230-nodroped.webp',
+        specs: [
+          'Resolução 203 dpi · 104mm',
+          'Velocidade 6 pol/s',
+          '128MB/256MB',
+          'USB e Ethernet',
+          'ZPL / EPL / XML',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Governo'],
+        descricao: 'Impressora Zebra ZD230 com USB e Ethernet nativos, sem necessidade de adaptadores.',
+      },
+
+      /* ——— AUTOATENDIMENTO ——— */
+      {
+        id: 'st103',
+        nome: 'ST103',
+        modelo: 'ST103-ANLFK-BR',
+        marca: 'Bluebird',
+        categoria: 'autoatendimento',
+        diferencial: 'Terminal multimídia Android 10 com Bluetooth 5 — autoatendimento moderno e fluido',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-st103-nodroped.webp',
+        specs: [
+          'Android 10',
+          '3GB RAM · 32GB',
+          'Wi-Fi e Bluetooth 5.0',
+          'Leitor 1D e 2D',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Aéreo', 'Governo'],
+        descricao: 'Terminal de autoatendimento Bluebird Android 10 com Bluetooth 5.0 para experiência moderna.',
+      },
+
+      {
+        id: 'zafiro',
+        nome: 'Zafiro',
+        modelo: 'JTZ270',
+        marca: 'YEP Solutions',
+        categoria: 'autoatendimento',
+        diferencial: 'Totem self-service 27" Full HD com leitor, impressora e reconhecimento facial — multi-OS, multi-instalação',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2026/04/Zafiro-Kiosk-Desktop-3.webp',
+        specs: [
+          'Tela Full HD 27" touchscreen',
+          'Windows 10/11 · Linux · Android 11',
+          'Leitor 1D/2D integrado',
+          'Impressora térmica com corte automático',
+          'NFC + USB + HDMI + Ethernet',
+          'Câmera facial 2MP (opcional)',
+          'Instalação: mesa, parede ou pedestal',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Governo', 'Logística', 'Manufatura'],
+        descricao: 'Totem de autoatendimento YEP Solutions Zafiro com tela 27" Full HD, impressora, leitor 2D, NFC e reconhecimento facial — suporta Windows, Linux e Android.',
+      },
+
+      {
+        id: 'mini-totem-alecto',
+        nome: 'Mini Totem ALECTO',
+        modelo: 'TAS-JTA15-WIM41101000',
+        marca: 'Jassway',
+        categoria: 'autoatendimento',
+        diferencial: 'Totem compacto 15.8" Windows com impressora e leitor 2D — ideal para espaços reduzidos',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-mini-totem-alecto-nodroped.webp',
+        specs: [
+          'Tela 15.8" touchscreen',
+          'Windows 10 com licença',
+          'Processador Intel Gen 8',
+          '8GB RAM / 128GB armazenamento',
+          'Leitor 2D integrado',
+          'Impressora térmica 3"',
+          'Portas: RJ45, RJ11, USB, Serial',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Restaurantes', 'Governo'],
+        descricao: 'Mini Totem compacto Jassway ALECTO com tela 15.8", Windows 10, leitor 2D e impressora térmica 3" — solução completa para ambientes com espaço reduzido.',
+      },
+
+      {
+        id: 'big-pos',
+        nome: 'BIG POS',
+        modelo: 'TAS-PTB27-WGM41101000',
+        marca: 'POSBank',
+        categoria: 'autoatendimento',
+        diferencial: 'Totem PDV 27" Intel Core i3 com impressora e leitor 2D — self-checkout robusto para alto volume',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-big-pos-nodroped.webp',
+        specs: [
+          'Tela 27" touchscreen',
+          'Windows 10 com licença',
+          'Intel Core i3 Gen 11',
+          '8GB RAM / 128GB armazenamento',
+          'Leitor 2D integrado',
+          'Impressora térmica 3"',
+          'Portas: RJ45, USB, Serial',
+        ],
+        segmentos: ['Varejo', 'Restaurantes', 'Logística', 'Governo'],
+        descricao: 'Totem PDV POSBank BIG POS com tela 27", Intel Core i3 Gen 11, leitor 2D e impressora térmica — self-checkout de alto volume para varejo e food service.',
+      },
+
+      /* ——— RFID ——— */
+      {
+        id: 'r6',
+        nome: 'R6',
+        modelo: 'R6-RFID-BR',
+        marca: 'Chainway',
+        categoria: 'rfid',
+        diferencial: 'Leitor RFID UHF tipo pistola com Bluetooth — inventário sem fio com precisão total',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-r6-nodroped.webp',
+        specs: [
+          'Tecnologia RFID UHF',
+          'Design tipo pistola',
+          'Conectividade Bluetooth',
+          'Antena circular 3dBi',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Logística', 'Governo'],
+        descricao: 'Leitor RFID UHF Chainway tipo pistola com Bluetooth para inventário sem fio de alta precisão.',
+      },
+
+      /* ——— CÂMERAS INTELIGENTES ——— */
+      {
+        id: 'psdw81652s',
+        nome: 'PSDW81652S',
+        modelo: 'PSDW81652S-A360-D440-ATC',
+        marca: 'Dahua',
+        categoria: 'cameras',
+        diferencial: 'Câmera PTZ 360° com analytics de vídeo — monitoramento inteligente em tempo real',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/09/dahua-PSDW81652S-A360-D440-ATC-1.png',
+        specs: [
+          'Tecnologia PTZ',
+          'Cobertura 360°',
+          'Analytics de vídeo integrado',
+          'Resolução HD',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Manufatura', 'Governo'],
+        descricao: 'Câmera Dahua PTZ 360° com analytics de vídeo para monitoramento inteligente em tempo real.',
+      },
+
+      /* ——— TABLETS INDUSTRIAIS ——— */
+      {
+        id: 'p80',
+        nome: 'P80',
+        modelo: 'P80-PT-SE4710',
+        marca: 'Chainway',
+        categoria: 'tablets',
+        diferencial: 'Tablet Android 13 com leitor 2D, 4G e GPS integrados — mobilidade total para campo e armazém',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/06/produto-p80.webp',
+        specs: [
+          'Android 13',
+          'Tela 8" com touch responsivo',
+          '4G LTE + Wi-Fi + GPS + Bluetooth',
+          'Câmeras 13MP traseira e 5MP frontal',
+          'Leitor 2D integrado (SE4710)',
+          '4GB RAM / 64GB armazenamento',
+        ],
+        segmentos: ['Logística', 'Varejo', 'Manufatura', 'Saúde'],
+        descricao: 'Tablet industrial Chainway P80 com Android 13, leitor 2D integrado, 4G, GPS e conectividade completa para operações em campo.',
+      },
+
+      /* ——— LEITORES DE CÓDIGO DE BARRAS ——— */
+      {
+        id: 'ds2278',
+        nome: 'DS2278',
+        modelo: 'DS2278-SR7U2100PRW-BR',
+        marca: 'Zebra',
+        categoria: 'leitores',
+        diferencial: 'Leitor 2D sem fio com base carregadora — agilidade no caixa sem cabos no caminho',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-ds2278-nodroped.webp',
+        specs: [
+          'Leitura 1D e 2D',
+          'Conectividade sem fio Bluetooth',
+          'Base carregadora inclusa',
+          'IP42',
+        ],
+        segmentos: ['Varejo', 'Saúde', 'Governo'],
+        descricao: 'Leitor Zebra DS2278 sem fio com base carregadora para agilidade no ponto de venda.',
+      },
+
+      /* ——— ENTERPRISE ——— */
+      {
+        id: 'sf650',
+        nome: 'SF650',
+        modelo: 'SF650-A4LAW-BR',
+        marca: 'Bluebird',
+        categoria: 'enterprise',
+        diferencial: 'Smartphone corporativo Android 12 com LTE e câmera 13MP — produtividade mobile para equipes em campo',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-sf650-nodroped.webp',
+        specs: [
+          'Android 12',
+          'Processador Octa-core',
+          '4G LTE + Wi-Fi + Bluetooth',
+          'Câmera 13MP traseira / 5MP frontal',
+          '4GB RAM / 32GB armazenamento',
+          'Compatível com MDM corporativo',
+        ],
+        segmentos: ['Manufatura', 'Logística', 'Varejo', 'Governo'],
+        descricao: 'Smartphone corporativo Bluebird SF650 com Android 12, LTE e gestão MDM para equipes de campo e operações distribuídas.',
+      },
+
+      /* ——— SOLUÇÕES COMPLEMENTARES ——— */
+      {
+        id: 'gs3520',
+        nome: 'GS3520',
+        modelo: 'GS-R3520-BR',
+        marca: 'Generalscan',
+        categoria: 'complementares',
+        diferencial: 'Ring scanner 2D Bluetooth sem fio — mãos livres para separação e coleta em alta velocidade',
+        imagem: 'https://yepsolutions.com.br/wp-content/uploads/2025/08/produto-gs3520-nodroped.webp',
+        specs: [
+          'Formato anel (Ring Scanner) sem fio',
+          'Leitor 2D Imager Mini',
+          'Bluetooth com mecanismo Zebra SE2707',
+          'Operação mãos livres',
+          'Design ergonômico para uso prolongado',
+        ],
+        segmentos: ['Logística', 'Manufatura', 'Varejo'],
+        descricao: 'Ring scanner 2D Bluetooth Generalscan GS3520 com mecanismo Zebra SE2707 para operação mãos livres em separação e coleta.',
+      },
+    ];
+
+    /* ——— SVG Placeholder (circuit board style) ——— */
+    const PLACEHOLDER_SVG = `
+      <svg class="prod-card__placeholder" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="10" y="10" width="60" height="60" rx="4" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="20" y="20" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1"/>
+        <rect x="44" y="20" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1"/>
+        <rect x="20" y="48" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1"/>
+        <rect x="44" y="48" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1"/>
+        <line x1="28" y1="32" x2="28" y2="40" stroke="currentColor" stroke-width="1"/>
+        <line x1="52" y1="32" x2="52" y2="40" stroke="currentColor" stroke-width="1"/>
+        <line x1="28" y1="40" x2="52" y2="40" stroke="currentColor" stroke-width="1"/>
+        <line x1="36" y1="40" x2="36" y2="48" stroke="currentColor" stroke-width="1"/>
+        <line x1="44" y1="40" x2="44" y2="48" stroke="currentColor" stroke-width="1"/>
+        <circle cx="28" cy="40" r="2" fill="currentColor"/>
+        <circle cx="52" cy="40" r="2" fill="currentColor"/>
+      </svg>
+    `;
+
+    const PLACEHOLDER_SVG_LARGE = `
+      <svg class="prod-modal-placeholder" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="10" y="10" width="80" height="80" rx="6" stroke="currentColor" stroke-width="1.5"/>
+        <rect x="22" y="22" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="56" y="22" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="22" y="62" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.2"/>
+        <rect x="56" y="62" width="22" height="16" rx="2" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="33" y1="38" x2="33" y2="50" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="67" y1="38" x2="67" y2="50" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="33" y1="50" x2="67" y2="50" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="45" y1="50" x2="45" y2="62" stroke="currentColor" stroke-width="1.2"/>
+        <line x1="55" y1="50" x2="55" y2="62" stroke="currentColor" stroke-width="1.2"/>
+        <circle cx="33" cy="50" r="3" fill="currentColor"/>
+        <circle cx="67" cy="50" r="3" fill="currentColor"/>
+      </svg>
+    `;
+
+    /* ——— Estado atual ——— */
+    let filtroAtivo = 'todos';
+    let produtoAtual = null;
+
+    /* ——— Helper: label da categoria ——— */
+    function getCatLabel(slug) {
+      const cat = CATEGORIAS.find(c => c.slug === slug);
+      return cat ? cat.label : slug;
+    }
+
+    /* ——— Renderiza tabs ——— */
+    function renderTabs() {
+      const container = document.getElementById('prodTabs');
+      if (!container) return;
+
+      container.innerHTML = '';
+      CATEGORIAS.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'prod-tab-btn' + (cat.slug === filtroAtivo ? ' is-active' : '');
+        btn.textContent = cat.label;
+        btn.dataset.slug = cat.slug;
+        btn.setAttribute('role', 'tab');
+        btn.setAttribute('aria-selected', cat.slug === filtroAtivo ? 'true' : 'false');
+
+        btn.addEventListener('click', () => {
+          filtroAtivo = cat.slug;
+          renderTabs();
+          renderGrid(filtroAtivo);
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    /* ——— Renderiza grid ——— */
+    function renderGrid(filtro) {
+      const grid  = document.getElementById('prodGrid');
+      const count = document.getElementById('prodCount');
+      if (!grid) return;
+
+      const lista = filtro === 'todos'
+        ? PRODUTOS
+        : PRODUTOS.filter(p => p.categoria === filtro);
+
+      if (count) {
+        count.innerHTML = `Exibindo <strong>${lista.length}</strong> produto${lista.length !== 1 ? 's' : ''}`;
+      }
+
+      if (lista.length === 0) {
+        grid.innerHTML = '<div class="prod-empty">Nenhum produto encontrado nesta categoria.</div>';
+        return;
+      }
+
+      grid.innerHTML = lista.map(produto => {
+        const hasImg = produto.imagem && produto.imagem.length > 0;
+        const imgTag = hasImg
+          ? `<img
+               class="prod-card__img"
+               src="${produto.imagem}"
+               alt="${produto.nome} — ${produto.marca}"
+               loading="lazy"
+               onerror="this.style.display='none';this.parentElement.querySelector('.prod-card__placeholder-wrap').style.display='flex';"
+             />
+             <div class="prod-card__placeholder-wrap" style="display:none; align-items:center; justify-content:center; width:100%; height:100%;">${PLACEHOLDER_SVG}</div>`
+          : `<div class="prod-card__placeholder-wrap" style="display:flex; align-items:center; justify-content:center; width:100%; height:100%;">${PLACEHOLDER_SVG}</div>`;
+
+        return `
+          <div class="col-md-6 col-lg-4" role="listitem">
+            <article
+              class="prod-card"
+              data-id="${produto.id}"
+              tabindex="0"
+              aria-label="Ver detalhes de ${produto.nome}"
+            >
+              <!-- Área de imagem -->
+              <div class="prod-card__img-wrap">
+                ${imgTag}
+                <span class="prod-card__cat-badge">${getCatLabel(produto.categoria)}</span>
+                <span class="prod-card__brand-badge">${produto.marca}</span>
+              </div>
+
+              <!-- Corpo -->
+              <div class="prod-card__body">
+                <h3 class="prod-card__name">${produto.nome}</h3>
+                <p class="prod-card__model">${produto.modelo}</p>
+                <p class="prod-card__dif">${produto.diferencial}</p>
+                <div class="prod-card__action">
+                  <button type="button" class="athos-btn athos-btn--ghost prod-card__btn">Ver detalhes</button>
+                </div>
+              </div>
+            </article>
+          </div>
+        `;
+      }).join('');
+
+      /* Event listeners nos cards */
+      grid.querySelectorAll('.prod-card').forEach(card => {
+        const id = card.dataset.id;
+        card.addEventListener('click', () => openDetalhes(id));
+        card.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openDetalhes(id);
+          }
+        });
+      });
+    }
+
+    /* ——— Abre drawer de detalhe ——— */
+    function openDetalhes(id) {
+      const produto = PRODUTOS.find(p => p.id === id);
+      if (!produto) return;
+      produtoAtual = produto;
+
+      /* Imagem */
+      const imgWrap = document.getElementById('drawerImgWrap');
+      const hasImg  = produto.imagem && produto.imagem.length > 0;
+      if (hasImg) {
+        imgWrap.innerHTML = `
+          <img
+            src="${produto.imagem}"
+            alt="${produto.nome} — ${produto.marca}"
+            style="max-height:200px; max-width:100%; object-fit:contain;"
+            onerror="this.style.display='none'; document.getElementById('drawerImgFallback').style.display='flex';"
+          />
+          <div id="drawerImgFallback" style="display:none; align-items:center; justify-content:center; width:100%;">${PLACEHOLDER_SVG_LARGE}</div>
+        `;
+      } else {
+        imgWrap.innerHTML = `<div style="display:flex; align-items:center; justify-content:center; width:100%;">${PLACEHOLDER_SVG_LARGE}</div>`;
+      }
+
+      /* Badges */
+      document.getElementById('drawerBadges').innerHTML = `
+        <span class="prod-modal-badge--cat">${getCatLabel(produto.categoria)}</span>
+        <span class="prod-modal-badge--brand">${produto.marca}</span>
+      `;
+
+      /* Nome e modelo */
+      document.getElementById('drawerNome').textContent    = produto.nome;
+      document.getElementById('drawerModelo').textContent  = `Modelo: ${produto.modelo}`;
+
+      /* Specs */
+      document.getElementById('drawerSpecs').innerHTML = produto.specs
+        .map(s => `<li>${s}</li>`)
+        .join('');
+
+      /* Segmentos */
+      document.getElementById('drawerSegs').innerHTML = produto.segmentos
+        .map(s => `<span class="prod-modal-seg-tag">${s}</span>`)
+        .join('');
+
+      /* Ações */
+      document.getElementById('drawerActions').innerHTML = `
+        <button
+          type="button"
+          class="athos-btn athos-btn--primary"
+          onclick="window._openOrcamento('${produto.nome}')"
+        >Solicitar Orçamento</button>
+        <a
+          class="athos-btn athos-btn--ghost"
+          href="index.html#automacao"
+        >Saber sobre Locação</a>
+      `;
+
+      /* WhatsApp */
+      // ATENÇÃO: substitua 5511XXXXXXXXX pelo número de WhatsApp da Athos Tecnologia
+      const waMsg = encodeURIComponent(`Olá, tenho interesse no produto ${produto.nome} (${produto.modelo}). Poderia me passar mais informações?`);
+      document.getElementById('drawerWhatsapp').href = `https://wa.me/5511XXXXXXXXX?text=${waMsg}`;
+
+      /* Abre drawer */
+      const drawer = document.getElementById('drawerProduto');
+      const backdrop = document.getElementById('drawerBackdrop');
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-open');
+      drawer.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      /* Foco */
+      setTimeout(() => document.getElementById('drawerClose').focus(), 50);
+    }
+
+    /* ——— Abre modal de orçamento ——— */
+    function openOrcamento(nomeProduto) {
+      const campo = document.getElementById('orc-produto');
+      if (campo) campo.value = nomeProduto || '';
+
+      /* Reseta estado do form */
+      const form    = document.getElementById('orcamentoForm');
+      const success = document.getElementById('orcSuccess');
+      const errBox  = document.getElementById('orcError');
+      const btn     = document.getElementById('orcSubmit');
+
+      if (form)    { form.hidden = false; }
+      if (success) { success.hidden = true; }
+      if (errBox)  { errBox.hidden = true; }
+      if (btn)     { btn.disabled = false; btn.textContent = 'Enviar orçamento'; }
+
+      /* Fecha drawer de detalhe se aberto */
+      const drawer = document.getElementById('drawerProduto');
+      const backdrop = document.getElementById('drawerBackdrop');
+      if (drawer) { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden', 'true'); }
+      if (backdrop) backdrop.classList.remove('is-open');
+
+      const overlay = document.getElementById('modalOrcamento');
+      overlay.classList.add('is-open');
+      overlay.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(() => {
+        document.getElementById('modalOrcClose').focus();
+      }, 50);
+    }
+
+    /* Expõe globalmente para uso inline nos botões */
+    window._openOrcamento = openOrcamento;
+
+    /* ——— Fecha drawer de detalhe e modal de orçamento ——— */
+    function closeModals() {
+      const drawer = document.getElementById('drawerProduto');
+      const backdrop = document.getElementById('drawerBackdrop');
+      if (drawer) { drawer.classList.remove('is-open'); drawer.setAttribute('aria-hidden','true'); }
+      if (backdrop) backdrop.classList.remove('is-open');
+
+      const orc = document.getElementById('modalOrcamento');
+      if (orc) { orc.classList.remove('is-open'); orc.setAttribute('aria-hidden','true'); }
+
+      document.body.style.overflow = '';
+    }
+
+    /* ——— Event listeners ——— */
+
+    /* Fechar drawer via botão e backdrop */
+    document.getElementById('drawerBackdrop').addEventListener('click', closeModals);
+    document.getElementById('drawerClose').addEventListener('click', closeModals);
+
+    /* Fechar modal orçamento via botão e overlay */
+    document.getElementById('modalOrcClose').addEventListener('click', closeModals);
+    document.getElementById('modalOrcamento').addEventListener('click', function (e) {
+      if (e.target === this) closeModals();
+    });
+
+    /* Fechar com Escape */
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeModals();
+    });
+
+    /* Botão hero "Solicitar orçamento" */
+    const heroOrcBtn = document.getElementById('heroOrcamentoBtn');
+    if (heroOrcBtn) {
+      heroOrcBtn.addEventListener('click', () => openOrcamento(''));
+    }
+
+    /* ——— Validação e submit do formulário de orçamento ——— */
+    (function () {
+      const form    = document.getElementById('orcamentoForm');
+      if (!form) return;
+
+      const btn     = document.getElementById('orcSubmit');
+      const success = document.getElementById('orcSuccess');
+      const errBox  = document.getElementById('orcError');
+
+      const MSGS = {
+        required:  'Campo obrigatório.',
+        email:     'Informe um e-mail válido.',
+        minlength: n => `Mínimo de ${n} caracteres.`,
+      };
+
+      function validateField(input) {
+        const group = input.closest('.athos-form-group');
+        const errEl = group && group.querySelector('.athos-form-error-msg');
+        let msg = '';
+
+        if (input.readOnly) return true;
+        if (input.validity.valueMissing)     msg = MSGS.required;
+        else if (input.validity.typeMismatch) msg = MSGS.email;
+        else if (input.validity.tooShort)    msg = MSGS.minlength(input.minLength);
+
+        group && group.classList.toggle('is-invalid', !!msg);
+        if (errEl) errEl.textContent = msg;
+        return !msg;
+      }
+
+      form.querySelectorAll('input, select, textarea').forEach(el => {
+        if (el.readOnly) return;
+        el.addEventListener('blur', () => validateField(el));
+        el.addEventListener('input', () => {
+          if (el.closest('.athos-form-group')?.classList.contains('is-invalid')) validateField(el);
+        });
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (errBox) errBox.hidden = true;
+
+        const fields   = [...form.querySelectorAll('input:not([name="_honey"]):not([readonly]), select, textarea')];
+        const allValid = fields.map(validateField).every(Boolean);
+        if (!allValid) {
+          const firstErr = form.querySelector('.is-invalid input, .is-invalid select, .is-invalid textarea');
+          firstErr && firstErr.focus();
+          return;
+        }
+
+        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+
+        try {
+          const res = await fetch(form.action, {
+            method:  'POST',
+            body:    new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+
+          if (res.ok) {
+            form.hidden = true;
+            if (success) { success.hidden = false; }
+          } else {
+            throw new Error('server_error');
+          }
+        } catch {
+          if (errBox) errBox.hidden = false;
+          if (btn)    { btn.disabled = false; btn.textContent = 'Enviar orçamento'; }
+        }
+      });
+    })();
+
+    /* ——— Inicialização ——— */
+    renderTabs();
+    renderGrid('todos');
+
+  })();
+  </script>
+
+</body>
+</html>

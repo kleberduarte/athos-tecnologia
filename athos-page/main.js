@@ -37,6 +37,12 @@ if (y) y.textContent = new Date().getFullYear();
 (function () {
   const canvas = document.getElementById('heroGrid');
   if (!canvas) return;
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    canvas.style.display = 'none';
+    return;
+  }
+
   const ctx = canvas.getContext('2d');
   let raf, t = 0;
 
@@ -144,4 +150,77 @@ if (y) y.textContent = new Date().getFullYear();
 
   window.addEventListener('scroll', updateFloat, { passive: true });
   updateFloat();
+})();
+
+// ——— Formulário de contato (Formspree AJAX) ———
+(function () {
+  const form    = document.getElementById('contactForm');
+  if (!form) return;
+
+  const btn     = document.getElementById('cfSubmit');
+  const success = document.getElementById('cfSuccess');
+  const errBox  = document.getElementById('cfError');
+
+  const MSGS = {
+    required:  'Campo obrigatório.',
+    email:     'Informe um e-mail válido.',
+    minlength: n => `Mínimo de ${n} caracteres.`,
+  };
+
+  function validateField(input) {
+    const group = input.closest('.athos-form-group');
+    const errEl = group && group.querySelector('.athos-form-error-msg');
+    let msg = '';
+
+    if (input.validity.valueMissing)     msg = MSGS.required;
+    else if (input.validity.typeMismatch) msg = MSGS.email;
+    else if (input.validity.tooShort)    msg = MSGS.minlength(input.minLength);
+
+    group && group.classList.toggle('is-invalid', !!msg);
+    if (errEl) errEl.textContent = msg;
+    return !msg;
+  }
+
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    el.addEventListener('blur', () => validateField(el));
+    el.addEventListener('input', () => {
+      if (el.closest('.athos-form-group')?.classList.contains('is-invalid')) validateField(el);
+    });
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errBox.hidden = true;
+
+    const fields = [...form.querySelectorAll('input:not([name="_honey"]), select, textarea')];
+    const allValid = fields.map(validateField).every(Boolean);
+    if (!allValid) {
+      const firstErr = form.querySelector('.is-invalid input, .is-invalid select, .is-invalid textarea');
+      firstErr && firstErr.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { Accept: 'application/json' },
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        success.hidden = false;
+        success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error('server_error');
+      }
+    } catch {
+      errBox.hidden = false;
+      btn.disabled = false;
+      btn.textContent = 'Enviar mensagem';
+    }
+  });
 })();

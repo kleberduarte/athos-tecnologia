@@ -3,18 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Athos Tecnologia — Arquitetura, dados e produtos digitais com eficiência, segurança e escala." />
-  <meta name="theme-color" content="#000000" />
-  <title>Athos Tecnologia</title>
+
+  <!-- SEO Primário -->
+  <title>Athos Tecnologia — Arquitetura, Dados e Produtos Digitais</title>
+  <meta name="description" content="Desenvolvemos soluções digitais com profundidade técnica, segurança e escala. Arquitetura de software, engenharia de dados, produtos digitais e automação industrial. Empresa do Grupo DOC Partners." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://athostecnologia.com.br/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://athostecnologia.com.br/" />
+  <meta property="og:title" content="Athos Tecnologia — Arquitetura, Dados e Produtos Digitais" />
+  <meta property="og:description" content="Soluções digitais com profundidade técnica, segurança e escala. Do levantamento de requisitos à operação em produção, somos parceiros de longo prazo." />
+  <meta property="og:image" content="https://athostecnologia.com.br/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:locale" content="pt_BR" />
+  <meta property="og:site_name" content="Athos Tecnologia" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Athos Tecnologia — Arquitetura, Dados e Produtos Digitais" />
+  <meta name="twitter:description" content="Soluções digitais com profundidade técnica, segurança e escala." />
+  <meta name="twitter:image" content="https://athostecnologia.com.br/og-image.png" />
+
+  <!-- Dados Estruturados JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Athos Tecnologia",
+    "url": "https://athostecnologia.com.br",
+    "logo": "https://athostecnologia.com.br/logo-athos.png",
+    "description": "Arquitetura de software, engenharia de dados, produtos digitais e automação industrial. Empresa do Grupo DOC Partners.",
+    "email": "contato@athostecnologia.com.br",
+    "foundingDate": "2018",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "Grupo DOC Partners"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "sales",
+      "email": "contato@athostecnologia.com.br",
+      "availableLanguage": "Portuguese"
+    },
+    "areaServed": "BR",
+    "knowsAbout": ["Arquitetura de Software", "Engenharia de Dados", "Produtos Digitais", "Segurança e Compliance", "Automação Industrial", "RFID"]
+  }
+  </script>
+
+  <!-- Ícones -->
+  <meta name="theme-color" content="#0a0a0f" />
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="favicon.svg" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <!-- Fontes auto-hospedadas (sem dependência de CDN externo) -->
+  <link rel="stylesheet" href="fonts/fonts.css" />
+
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+
+  <!-- Estilos -->
   <link rel="stylesheet" href="styles.css" />
+
+  <!-- Google Analytics 4 — substitua G-XXXXXXXXXX pelo seu Measurement ID -->
+  <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script> -->
 </head>
 <body>
+
+  <!-- Skip Navigation (acessibilidade — WCAG 2.4.1) -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
   <!-- Logo background -->
   <div class="athos-logo-bg" aria-hidden="true"></div>
@@ -22,7 +87,7 @@
   <header class="athos-header" id="siteHeader">
     <div class="athos-header__bar">
       <a href="#inicio" class="athos-logo-link" aria-label="Athos Tecnologia — início">
-        <img src="logo-athos.png" alt="Athos Tecnologia" />
+        <img src="logo-athos.png" alt="Athos Tecnologia" width="180" height="36" />
       </a>
       <button type="button" class="athos-nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -33,17 +98,22 @@
           <li><a href="#automacao">Automação</a></li>
           <li><a href="#sobre">Sobre</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
+          <li><a href="produtos.html">Produtos</a></li>
           <li><a href="#contato">Contato</a></li>
           <li class="d-lg-none pt-2">
             <a class="athos-header__cta athos-header__cta--block" href="#contato">Fale conosco</a>
           </li>
+          <li class="d-lg-none pt-1">
+            <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta athos-header__cta--block">Console Chamados</a>
+          </li>
         </ul>
       </nav>
+      <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta d-none d-lg-inline-flex">Console Chamados</a>
       <a class="athos-header__cta" href="#contato">Fale conosco</a>
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
 
     <!-- Hero -->
     <section class="athos-hero" id="inicio">
@@ -470,21 +540,134 @@
       </div>
     </section>
 
-    <!-- CTA Contato -->
-    <section class="athos-cta reveal" id="contato">
+    <!-- Contato -->
+    <section class="athos-cta reveal" id="contato" aria-labelledby="contato-titulo">
       <div class="container-athos">
         <div class="row justify-content-center">
-          <div class="col-lg-8 col-xl-7 text-center">
-            <div class="athos-badge mb-4">Vamos conversar</div>
-            <h2 class="athos-cta__title">Pronto para o próximo nível?</h2>
-            <p class="athos-cta__text">
-              Fale com nossa equipe e descubra como a Athos pode transformar seus desafios em vantagem competitiva.
-            </p>
-            <a class="athos-btn athos-btn--primary athos-btn--lg" href="mailto:contato@athostecnologia.com.br">
-              contato@athostecnologia.com.br
-            </a>
-            <p class="mt-4">
-              <a href="../index.html" class="athos-back-link">← Voltar ao Grupo DOC Partners</a>
+          <div class="col-lg-8 col-xl-7">
+            <div class="text-center mb-5">
+              <div class="athos-badge mb-4">Vamos conversar</div>
+              <h2 class="athos-cta__title" id="contato-titulo">Pronto para o próximo nível?</h2>
+              <p class="athos-cta__text">
+                Fale com nossa equipe e descubra como a Athos pode transformar seus desafios em vantagem competitiva.
+              </p>
+            </div>
+
+            <!-- Formulário de contato — Formspree -->
+            <!-- CONFIGURAÇÃO: substitua YOUR_FORM_ID pelo ID do seu formulário em formspree.io -->
+            <form
+              class="athos-contact-form"
+              id="contactForm"
+              action="https://formspree.io/f/YOUR_FORM_ID"
+              method="POST"
+              novalidate
+              aria-label="Formulário de contato"
+            >
+              <!-- Honeypot anti-spam (oculto para usuários) -->
+              <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off" />
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="athos-form-group">
+                    <label for="cf-nome">Nome completo <span aria-hidden="true">*</span></label>
+                    <input
+                      type="text"
+                      id="cf-nome"
+                      name="nome"
+                      required
+                      minlength="3"
+                      maxlength="100"
+                      placeholder="Seu nome"
+                      autocomplete="name"
+                      aria-required="true"
+                    />
+                    <span class="athos-form-error-msg" aria-live="polite"></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athos-form-group">
+                    <label for="cf-email">E-mail corporativo <span aria-hidden="true">*</span></label>
+                    <input
+                      type="email"
+                      id="cf-email"
+                      name="email"
+                      required
+                      placeholder="voce@empresa.com"
+                      autocomplete="email"
+                      aria-required="true"
+                    />
+                    <span class="athos-form-error-msg" aria-live="polite"></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athos-form-group">
+                    <label for="cf-empresa">Empresa <span aria-hidden="true">*</span></label>
+                    <input
+                      type="text"
+                      id="cf-empresa"
+                      name="empresa"
+                      required
+                      minlength="2"
+                      maxlength="100"
+                      placeholder="Nome da empresa"
+                      autocomplete="organization"
+                      aria-required="true"
+                    />
+                    <span class="athos-form-error-msg" aria-live="polite"></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="athos-form-group">
+                    <label for="cf-segmento">Segmento <span aria-hidden="true">*</span></label>
+                    <select id="cf-segmento" name="segmento" required aria-required="true">
+                      <option value="">Selecione...</option>
+                      <option value="varejo">Varejo</option>
+                      <option value="saude">Saúde</option>
+                      <option value="logistica">Logística &amp; Manufatura</option>
+                      <option value="ti">TI / Software</option>
+                      <option value="outro">Outro</option>
+                    </select>
+                    <span class="athos-form-error-msg" aria-live="polite"></span>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="athos-form-group">
+                    <label for="cf-mensagem">Mensagem <span aria-hidden="true">*</span></label>
+                    <textarea
+                      id="cf-mensagem"
+                      name="mensagem"
+                      required
+                      minlength="20"
+                      maxlength="2000"
+                      rows="4"
+                      placeholder="Descreva brevemente seu projeto ou necessidade..."
+                      aria-required="true"
+                    ></textarea>
+                    <span class="athos-form-error-msg" aria-live="polite"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="text-center mt-4">
+                <button type="submit" class="athos-btn athos-btn--primary athos-btn--lg" id="cfSubmit">
+                  Enviar mensagem
+                </button>
+              </div>
+            </form>
+
+            <!-- Estado de sucesso -->
+            <div id="cfSuccess" class="athos-form-feedback athos-form-feedback--success" hidden role="status" aria-live="polite">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <p>Mensagem enviada com sucesso! Retornaremos em até <strong>24h úteis</strong>.</p>
+            </div>
+
+            <!-- Estado de erro -->
+            <div id="cfError" class="athos-form-feedback athos-form-feedback--error" hidden role="alert" aria-live="assertive">
+              <p>Ocorreu um problema ao enviar. Tente novamente ou entre em contato direto: <a href="mailto:contato@athostecnologia.com.br">contato@athostecnologia.com.br</a></p>
+            </div>
+
+            <p class="text-center mt-5">
+              <a href="../../index.html" class="athos-back-link">← Voltar ao Grupo DOC Partners</a>
             </p>
           </div>
         </div>
