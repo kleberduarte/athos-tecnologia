@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>{{ cliente.nome }} — CRM</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="breadcrumb-bar">
+    <a class="back-link" href="{{ url_for('crm_clientes') }}">&#8592; Clientes CRM</a>
+    <span class="breadcrumb-sep">|</span>
+    <span class="breadcrumb-id">{{ cliente.nome }}</span>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">{{ cliente.nome }} {% if cliente.empresa %}<span style="font-size:14px; color:var(--text-mid);">· {{ cliente.empresa }}</span>{% endif %}</div>
+      <div class="page-meta">Ficha do cliente · cadastrado em {{ cliente.criado_em[:10] }}</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-nova-interacao">+ Nova interação</button>
+    </div>
+  </div>
+
+  <!-- Grid de detalhes -->
+  <div class="crm-detail-grid">
+
+    <!-- Dados do cliente -->
+    <div class="crm-detail-card">
+      <h3>Dados do contato</h3>
+      <table style="width:100%; border-collapse:collapse; font-size:12px;">
+        <tr>
+          <td style="color:var(--text-low); padding:4px 0; width:90px; font-family:var(--font-label);">Empresa</td>
+          <td>{{ cliente.empresa or '—' }}</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-low); padding:4px 0; font-family:var(--font-label);">Telefone</td>
+          <td>{{ cliente.telefone or '—' }}</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-low); padding:4px 0; font-family:var(--font-label);">E-mail</td>
+          <td>{{ cliente.email or '—' }}</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-low); padding:4px 0; font-family:var(--font-label);">Origem</td>
+          <td>{{ cliente.origem or '—' }}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Oportunidades -->
+    <div class="crm-detail-card">
+      <h3>Oportunidades ({{ oportunidades|length }})</h3>
+      {% if oportunidades %}
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        {% for op in oportunidades %}
+        <a href="{{ url_for('crm_oportunidade_detalhe', op_id=op.id) }}" style="text-decoration:none; display:block; padding:8px 10px; background:var(--navy-800); border:1px solid var(--navy-border); border-radius:4px; transition: border-color .15s;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+            <span style="font-size:12px; color:var(--text-hi);">{{ op.titulo }}</span>
+            <span class="badge estagio-{{ op.estagio }}" style="font-size:10px; padding:2px 8px; border-radius:3px; white-space:nowrap;">{{ op.estagio }}</span>
+          </div>
+          <div style="margin-top:4px; font-size:11px; color:var(--text-low); font-family:var(--font-label);">
+            {% if op.valor_estimado %}R$ {{ '%.2f'|format(op.valor_estimado)|replace('.', ',') }} · {% endif %}
+            {{ op.responsavel_nome or 'Sem responsável' }}
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p style="font-size:12px; color:var(--text-low); font-family:var(--font-label);">Nenhuma oportunidade vinculada.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Timeline -->
+  <div style="padding: 0 28px 32px 28px;">
+    <div class="crm-detail-card">
+      <h3>Timeline ({{ timeline|length }} registros)</h3>
+      {% if timeline %}
+      <ul class="crm-timeline">
+        {% for item in timeline %}
+        <li>
+          <div class="crm-tl-icon">
+            {% if item.tipo == 'chamado' %}&#127915;
+            {% elif item.subtipo == 'ligacao' %}&#128222;
+            {% elif item.subtipo == 'reuniao' %}&#128101;
+            {% elif item.subtipo == 'email' %}&#128139;
+            {% elif item.subtipo == 'whatsapp' %}&#128172;
+            {% else %}&#128196;
+            {% endif %}
+          </div>
+          <div class="crm-tl-body">
+            {% if item.tipo == 'chamado' %}
+            <div style="font-size:12px;">
+              <strong>Chamado:</strong>
+              <a href="{{ url_for('detalhe_chamado', chamado_id=item.id) }}" style="color:var(--accent-cyan); text-decoration:none;">{{ item.titulo }}</a>
+              <span class="badge" style="font-size:10px; margin-left:6px; background:rgba(0,212,255,0.1); color:var(--accent-cyan); padding:1px 6px; border-radius:3px;">{{ item.status }}</span>
+            </div>
+            {% if item.texto %}
+            <div style="font-size:11px; color:var(--text-mid); margin-top:3px; white-space:pre-wrap;">{{ item.texto[:200] }}{% if item.texto|length > 200 %}…{% endif %}</div>
+            {% endif %}
+            {% else %}
+            <div style="font-size:12px;">
+              <strong>{{ item.subtipo|title if item.subtipo else 'Interação' }}</strong>
+            </div>
+            {% if item.texto %}
+            <div style="font-size:11px; color:var(--text-mid); margin-top:3px; white-space:pre-wrap;">{{ item.texto }}</div>
+            {% endif %}
+            {% endif %}
+            <div class="crm-tl-meta">{{ item.tempo }} · {{ item.usuario_nome }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="font-size:12px; color:var(--text-low); font-family:var(--font-label);">Nenhuma interação registrada ainda.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Modal nova interação -->
+  <div class="modal-overlay" id="modal-interacao">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Nova Interação</div>
+        <button class="icon-btn" id="btn-cancelar-int" type="button">&#10005;</button>
+      </div>
+      <form method="post" action="{{ url_for('crm_adicionar_interacao', cliente_id=cliente.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body">
+          <label class="field-label">Tipo</label>
+          <select class="field-input" name="tipo">
+            <option value="ligacao">Ligação</option>
+            <option value="reuniao">Reunião</option>
+            <option value="email">E-mail</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="outro">Outro</option>
+          </select>
+
+          <label class="field-label">Descrição</label>
+          <textarea class="field-input" name="descricao" rows="4" placeholder="Descreva o que foi discutido…" style="resize:vertical;"></textarea>
+
+          {% if oportunidades %}
+          <label class="field-label">Vincular à oportunidade (opcional)</label>
+          <select class="field-input" name="oportunidade_id">
+            <option value="">Nenhuma</option>
+            {% for op in oportunidades %}
+            <option value="{{ op.id }}">{{ op.titulo }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" type="button" id="btn-cancelar-int2">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Registrar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+const modalInt = document.getElementById('modal-interacao');
+document.getElementById('btn-nova-interacao').addEventListener('click', () => modalInt.classList.add('open'));
+document.getElementById('btn-cancelar-int').addEventListener('click', () => modalInt.classList.remove('open'));
+document.getElementById('btn-cancelar-int2').addEventListener('click', () => modalInt.classList.remove('open'));
+modalInt.addEventListener('click', e => { if (e.target === modalInt) modalInt.classList.remove('open'); });
+</script>
+
+</body>
+</html>

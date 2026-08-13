@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Incidentes — Hub Servisdesk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Quadro de <span>Incidentes</span></div>
+      <div class="page-meta">Problemas emergentes em produção · ciclo detectado → postmortem</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-novo-inc">&#128680; Novo incidente</button>
+    </div>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="kpi-row">
+    <div class="kpi-card k-total">
+      <div class="kpi-label">Ativos</div>
+      <div class="kpi-value">{{ kpis.total_ativos }} <small>incidentes</small></div>
+    </div>
+    <div class="kpi-card k-p0">
+      <div class="kpi-label">P0 ativos</div>
+      <div class="kpi-value">{{ kpis.p0_ativos }} <small>críticos</small></div>
+    </div>
+    <div class="kpi-card k-mttr">
+      <div class="kpi-label">MTTR médio</div>
+      <div class="kpi-value">{{ kpis.mttr }}</div>
+    </div>
+    <div class="kpi-card k-impactados">
+      <div class="kpi-label">Usuários impactados</div>
+      <div class="kpi-value">{{ kpis.impactados }}</div>
+    </div>
+  </div>
+
+  <div class="incident-wrap">
+    {% if incidentes %}
+    <table class="incident-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Sev.</th>
+          <th>Status</th>
+          <th>Título</th>
+          <th>Serviço</th>
+          <th>Impactados</th>
+          <th>Tempo</th>
+          <th>Responsável</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for inc in incidentes %}
+        <tr class="incident-row row-{{ inc.severidade }}" onclick="window.location='/incidentes/{{ inc.id }}'">
+          <td style="color:var(--text-low); font-family:var(--font-display); font-size:11px;">#{{ '%04d'|format(inc.id) }}</td>
+          <td><span class="badge sev-{{ inc.severidade }}">{{ inc.severidade }}</span></td>
+          <td><span class="badge is-{{ inc.status }}">{{ status_labels[inc.status] }}</span></td>
+          <td style="font-weight:600; max-width:280px; word-break:break-word;">{{ inc.titulo }}</td>
+          <td style="color:var(--text-mid);">{{ inc.servico_afetado or '—' }}</td>
+          <td style="text-align:center;">{{ inc.usuarios_impactados or '—' }}</td>
+          <td style="color:var(--text-low); font-size:12px; white-space:nowrap;">{{ inc.tempo_aberto }}</td>
+          <td style="color:var(--text-mid);">{{ inc.atribuido_nome or '—' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="incident-empty">
+      Nenhum incidente registrado ainda.<br>
+      <span style="font-size:10px; opacity:.6;">Clique em "Novo incidente" para registrar um problema em produção.</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Modal: novo incidente -->
+  <div class="modal-overlay" id="modal-novo-inc">
+    <div class="modal-box">
+      <div class="modal-title">&#128680; Novo incidente</div>
+      <form method="post" action="{{ url_for('criar_incidente') }}" id="form-novo-inc">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label class="field-label">Título <small style="color:var(--danger);">*</small></label>
+        <input class="field-input" type="text" name="titulo" placeholder="Descreva o problema em produção" required maxlength="200">
+
+        <label class="field-label">Descrição</label>
+        <textarea class="field-input" name="descricao" placeholder="Contexto, sintomas, impacto observado..." style="min-height:80px;"></textarea>
+
+        <div class="field-row" style="margin-top:12px;">
+          <div>
+            <label class="field-label">Severidade</label>
+            <select class="field-input" name="severidade" id="sel-sev-novo">
+              <option value="P0">P0 — Crítico (sistema fora)</option>
+              <option value="P1">P1 — Degradado (impacto severo)</option>
+              <option value="P2" selected>P2 — Parcial (impacto limitado)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Usuários impactados</label>
+            <input class="field-input" type="number" name="usuarios_impactados" min="0" placeholder="0">
+          </div>
+        </div>
+
+        <div class="field-row" style="margin-top:12px;">
+          <div>
+            <label class="field-label">Serviço afetado</label>
+            <input class="field-input" type="text" name="servico_afetado" placeholder="Ex: Checkout, API de pagamentos">
+          </div>
+          <div>
+            <label class="field-label">Método de detecção</label>
+            <select class="field-input" name="metodo_deteccao">
+              <option value="">Não informado</option>
+              <option value="Monitoramento automático">Monitoramento automático</option>
+              <option value="Relato de usuário">Relato de usuário</option>
+              <option value="Equipe interna">Equipe interna</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <label class="field-label">Início do incidente</label>
+          <input class="field-input" type="datetime-local" name="inicio_em" id="input-inicio-em">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" style="flex:1" id="btn-cancelar-inc">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1">Registrar incidente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById("modal-novo-inc");
+    document.getElementById("btn-novo-inc").addEventListener("click", () => {
+      // preenche data/hora atual no campo início
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById("input-inicio-em").value = now.toISOString().slice(0,16);
+      modal.classList.add("open");
+    });
+    document.getElementById("btn-cancelar-inc").addEventListener("click", () => modal.classList.remove("open"));
+    modal.addEventListener("click", e => { if (e.target === modal) modal.classList.remove("open"); });
+  </script>
+</body>
+</html>

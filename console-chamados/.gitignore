@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
+*.db-journal
+static/uploads/
+log/
+seed_*.py
+=*
+
+# Prometheus binaries
+monitoring/prometheus/**/*.exe
+monitoring/prometheus/**/*.tar.gz

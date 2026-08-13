@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Equipamentos — Hub Servisdesk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Gestão de <span>Equipamentos</span></div>
+      <div class="page-meta">Totens, impressoras e dispositivos monitorados pelo scanner</div>
+    </div>
+    <div class="header-actions">
+      <a class="btn btn-ghost" href="{{ url_for('board') }}">&#8592; Board</a>
+      <button class="btn btn-primary" id="btn-novo-equip">+ Novo equipamento</button>
+    </div>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 12px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="users-table-wrap" style="padding-top:20px;">
+    {% if equipamentos %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>IP</th>
+          <th>Modelo</th>
+          <th>Serial</th>
+          <th>Setor</th>
+          <th style="text-align:center;">Status</th>
+          <th>Diagnóstico</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for eq in equipamentos %}
+        <tr id="equip-row-{{ eq.id }}" {% if not eq.ativo %}style="opacity:0.55;"{% endif %}>
+          <td style="font-weight:500;">{{ eq.nome }}</td>
+          <td style="color:var(--text-mid); font-size:12.5px; font-family:var(--font-display);">{{ eq.ip }}</td>
+          <td style="color:var(--text-mid); font-size:12.5px;">{{ eq.modelo or '—' }}</td>
+          <td style="color:var(--text-mid); font-size:12.5px;">{{ eq.serial or '—' }}</td>
+          <td style="color:var(--text-mid); font-size:12.5px;">{{ eq.setor_nome or '—' }}</td>
+          <td style="text-align:center;">
+            <span class="badge {% if eq.ativo %}badge-ativo{% else %}badge-inativo{% endif %}" id="badge-status-{{ eq.id }}">
+              {{ 'Ativo' if eq.ativo else 'Inativo' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="testarScan({{ eq.id }})" id="btn-scan-{{ eq.id }}">
+              &#128269; Testar
+            </button>
+            <span id="scan-inline-{{ eq.id }}" style="font-size:12px; margin-left:6px;"></span>
+          </td>
+          <td>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="btn btn-ghost btn-sm"
+                      data-id="{{ eq.id }}"
+                      data-nome="{{ eq.nome | e }}"
+                      data-ip="{{ eq.ip | e }}"
+                      data-modelo="{{ eq.modelo or '' | e }}"
+                      data-serial="{{ eq.serial or '' | e }}"
+                      data-setor-id="{{ eq.setor_id or '' }}"
+                      onclick="abrirEdicao(this)">
+                Editar
+              </button>
+              <button class="btn btn-ghost btn-sm btn-danger"
+                      id="btn-toggle-{{ eq.id }}"
+                      onclick="toggleEquip({{ eq.id }}, {{ 1 if eq.ativo else 0 }})">
+                {{ 'Desativar' if eq.ativo else 'Ativar' }}
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">Nenhum equipamento cadastrado. Clique em "+ Novo equipamento" para começar.</div>
+    {% endif %}
+  </div>
+
+  <!-- Modal: novo equipamento -->
+  <div class="modal-overlay" id="modal-novo-equip">
+    <div class="modal-box">
+      <div class="modal-title">Novo equipamento</div>
+      <form method="post" action="{{ url_for('criar_equipamento') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label class="field-label">Nome <span style="color:var(--danger)">*</span></label>
+        <input class="field-input" type="text" name="nome" required placeholder="Ex: Totem Recepção, Impressora TI">
+
+        <label class="field-label">Endereço IP <span style="color:var(--danger)">*</span></label>
+        <input class="field-input" type="text" name="ip" required placeholder="Ex: 192.168.1.100"
+               pattern="^(\d{1,3}\.){3}\d{1,3}$" title="IPv4 válido (ex: 192.168.1.100)">
+
+        <div class="field-row" style="margin-top:0;">
+          <div>
+            <label class="field-label">Modelo</label>
+            <input class="field-input" type="text" name="modelo" placeholder="Ex: HP LaserJet M404dn">
+          </div>
+          <div>
+            <label class="field-label">Número de série</label>
+            <input class="field-input" type="text" name="serial" placeholder="Ex: SN-00123456">
+          </div>
+        </div>
+
+        <label class="field-label">Setor</label>
+        <select class="field-input" name="setor_id">
+          <option value="">Sem setor</option>
+          {% for s in setores %}
+          <option value="{{ s.id }}">{{ s.nome }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="fecharModal('modal-novo-equip')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Criar equipamento</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: editar equipamento -->
+  <div class="modal-overlay" id="modal-editar-equip">
+    <div class="modal-box">
+      <div class="modal-title">Editar equipamento</div>
+      <form id="form-editar-equip" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label class="field-label">Nome <span style="color:var(--danger)">*</span></label>
+        <input class="field-input" type="text" name="nome" id="edit-nome" required>
+
+        <label class="field-label">Endereço IP <span style="color:var(--danger)">*</span></label>
+        <input class="field-input" type="text" name="ip" id="edit-ip" required
+               pattern="^(\d{1,3}\.){3}\d{1,3}$" title="IPv4 válido (ex: 192.168.1.100)">
+
+        <div class="field-row" style="margin-top:0;">
+          <div>
+            <label class="field-label">Modelo</label>
+            <input class="field-input" type="text" name="modelo" id="edit-modelo">
+          </div>
+          <div>
+            <label class="field-label">Número de série</label>
+            <input class="field-input" type="text" name="serial" id="edit-serial">
+          </div>
+        </div>
+
+        <label class="field-label">Setor</label>
+        <select class="field-input" name="setor_id" id="edit-setor-id">
+          <option value="">Sem setor</option>
+          {% for s in setores %}
+          <option value="{{ s.id }}">{{ s.nome }}</option>
+          {% endfor %}
+        </select>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" style="flex:1;" onclick="fecharModal('modal-editar-equip')">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+    document.getElementById("btn-novo-equip").addEventListener("click", () => {
+      document.getElementById("modal-novo-equip").classList.add("open");
+    });
+
+    function fecharModal(id) {
+      document.getElementById(id).classList.remove("open");
+    }
+
+    document.querySelectorAll(".modal-overlay").forEach(m => {
+      m.addEventListener("click", e => { if (e.target === m) m.classList.remove("open"); });
+    });
+
+    function abrirEdicao(btn) {
+      document.getElementById("edit-nome").value    = btn.dataset.nome;
+      document.getElementById("edit-ip").value      = btn.dataset.ip;
+      document.getElementById("edit-modelo").value  = btn.dataset.modelo;
+      document.getElementById("edit-serial").value  = btn.dataset.serial;
+      document.getElementById("edit-setor-id").value = btn.dataset.setorId || "";
+      document.getElementById("form-editar-equip").action = `/equipamentos/${btn.dataset.id}/editar`;
+      document.getElementById("modal-editar-equip").classList.add("open");
+    }
+
+    async function toggleEquip(id, ativo) {
+      const resp = await fetch(`/equipamentos/${id}/toggle`, {
+        method: "POST",
+        headers: { "X-CSRFToken": getCsrfToken() },
+      });
+      if (!resp.ok) { alert("Erro ao alterar status."); return; }
+
+      const row   = document.getElementById(`equip-row-${id}`);
+      const badge = document.getElementById(`badge-status-${id}`);
+      const btn   = document.getElementById(`btn-toggle-${id}`);
+      const novoAtivo = ativo === 1 ? 0 : 1;
+
+      badge.textContent = novoAtivo ? "Ativo" : "Inativo";
+      badge.className   = `badge ${novoAtivo ? "badge-ativo" : "badge-inativo"}`;
+      btn.textContent   = novoAtivo ? "Desativar" : "Ativar";
+      btn.setAttribute("onclick", `toggleEquip(${id}, ${novoAtivo})`);
+      row.style.opacity = novoAtivo ? "1" : "0.55";
+    }
+
+    async function testarScan(id) {
+      const btn    = document.getElementById(`btn-scan-${id}`);
+      const result = document.getElementById(`scan-inline-${id}`);
+      btn.disabled = true;
+      btn.textContent = "...";
+      result.textContent = "";
+
+      try {
+        const resp = await fetch(`/api/equipamentos/${id}/scan`, {
+          method: "POST",
+          headers: { "X-CSRFToken": getCsrfToken() },
+        });
+        const data = await resp.json();
+        const cor  = data.sucesso ? "var(--green, #00d4aa)" : "var(--amber, #f59e0b)";
+        const ico  = data.sucesso ? "✓" : "⚠";
+        result.innerHTML = `<span style="color:${cor}">${ico} ${data.resumo || data.erro || "Sem resposta"}</span>`;
+      } catch (_) {
+        result.innerHTML = '<span style="color:var(--amber,#f59e0b)">⚠ Falha ao contactar scanner</span>';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🔍 Testar";
+      }
+    }
+  </script>
+</body>
+</html>

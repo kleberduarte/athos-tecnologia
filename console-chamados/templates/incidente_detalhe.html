@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>#INC-{{ '%04d'|format(incidente.id) }} — {{ incidente.titulo }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="breadcrumb-bar">
+    <a class="back-link" href="{{ url_for('listar_incidentes') }}">&#8592; Incidentes</a>
+    <span class="breadcrumb-sep">|</span>
+    <span class="breadcrumb-id">#INC-{{ '%04d'|format(incidente.id) }}</span>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin:8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="page-header">
+    <div style="flex:1; min-width:0;">
+      <div class="page-title" style="font-size:20px; word-break:break-word;">{{ incidente.titulo }}</div>
+      <div class="inc-header-badges">
+        <span class="badge sev-{{ incidente.severidade }}">{{ incidente.severidade }}</span>
+        <span class="badge is-{{ incidente.status }}">{{ status_labels[incidente.status] }}</span>
+        {% if incidente.servico_afetado %}
+        <span class="tag">{{ incidente.servico_afetado }}</span>
+        {% endif %}
+        <span class="breadcrumb-id" style="margin-left:4px;">{{ incidente.criado_em }}</span>
+      </div>
+    </div>
+    {% if usuario_papel == 'admin' %}
+    <div style="flex-shrink:0;">
+      <button class="btn btn-ghost btn-sm" id="btn-excluir-inc" style="color:#ff8099; border-color:rgba(255,51,102,0.3);">
+        Excluir incidente
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-grid">
+
+    <!-- ===== MAIN ===== -->
+    <div class="detail-main">
+
+      <div class="detail-card">
+        <div class="detail-card-title">Descrição</div>
+        {% if incidente.descricao %}
+        <div class="chamado-desc">{{ incidente.descricao }}</div>
+        {% else %}
+        <div class="chamado-desc vazio">Sem descrição fornecida.</div>
+        {% endif %}
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">Linha do tempo</div>
+        <div class="timeline">
+
+          {% for ev in eventos %}
+          <div class="tl-item">
+            {% if not loop.last %}<div class="tl-connector"></div>{% endif %}
+
+            {% if ev.tipo == 'comentario' %}
+              <div class="tl-icon ti-comment">{{ ev.usuario_nome | iniciais }}</div>
+              <div class="tl-body">
+                <div class="tl-header">
+                  <span class="tl-user">{{ ev.usuario_nome or 'Sistema' }}</span>
+                  <span class="tl-time">{{ ev.tempo }}</span>
+                </div>
+                {% if ev.texto %}<div class="tl-comment-box">{{ ev.texto }}</div>{% endif %}
+              </div>
+
+            {% else %}
+              <div class="tl-icon ti-mov">&#8644;</div>
+              <div class="tl-body">
+                <div class="tl-header">
+                  <span class="tl-user">{{ ev.usuario_nome or 'Sistema' }}</span>
+                  <span class="tl-time">{{ ev.tempo }}</span>
+                </div>
+                <div class="tl-mov-badges">
+                  <span class="tl-arrow" style="margin-left:0;">Status →</span>
+                  <span class="badge is-{{ ev.status_novo }}">{{ status_labels.get(ev.status_novo, ev.status_novo) }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          <!-- Formulário de comentário -->
+          <div class="tl-item">
+            <div class="tl-icon ti-comment" style="border-color:var(--navy-border);">{{ usuario_iniciais }}</div>
+            <div class="tl-body">
+              <form method="post" action="{{ url_for('adicionar_evento_incidente', incidente_id=incidente.id) }}" id="form-evento">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <textarea class="field-input" name="texto" id="evento-texto" placeholder="Adicionar atualização ou comentário..." style="min-height:72px; resize:vertical; margin-bottom:0;"></textarea>
+                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                  <button type="submit" class="btn btn-primary btn-sm">Comentar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="detail-sidebar">
+
+      <div class="detail-card">
+        <div class="detail-card-title">Status</div>
+        {% if incidente.status in ('resolvido', 'postmortem') %}
+        <span class="badge is-{{ incidente.status }}" style="display:inline-block; margin-top:4px;">
+          {{ status_labels[incidente.status] }}
+        </span>
+        <p style="font-size:11px; color:var(--text-low); font-family:var(--font-label); line-height:1.5; margin-top:8px;">
+          {% if incidente.status == 'postmortem' %}Incidente encerrado — em análise pós-mortem.{% else %}Incidente resolvido.{% endif %}
+        </p>
+        {% else %}
+        <select class="field-input" id="sel-status-inc" style="margin-top:0;">
+          {% for s, label in status_labels.items() %}
+          <option value="{{ s }}" {% if incidente.status == s %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-status-inc" style="margin-top:10px; width:100%; justify-content:center;">
+          Salvar status
+        </button>
+        {% endif %}
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">Severidade</div>
+        <select class="field-input" id="sel-sev-inc" style="margin-top:0;">
+          <option value="P0" {% if incidente.severidade == 'P0' %}selected{% endif %}>P0 — Crítico</option>
+          <option value="P1" {% if incidente.severidade == 'P1' %}selected{% endif %}>P1 — Degradado</option>
+          <option value="P2" {% if incidente.severidade == 'P2' %}selected{% endif %}>P2 — Parcial</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-sev-inc" style="margin-top:10px; width:100%; justify-content:center;">
+          Salvar severidade
+        </button>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">Atribuição</div>
+        <button class="btn btn-ghost btn-sm" id="btn-atribuir-mim-inc" style="width:100%; justify-content:center; margin-bottom:8px;">
+          &#128100; Atribuir a mim
+        </button>
+        <select class="field-input" id="sel-atribuido-inc" style="margin-top:0;">
+          <option value="">Não atribuído</option>
+          {% for u in usuarios %}
+          <option value="{{ u.id }}" {% if incidente.atribuido_a == u.id %}selected{% endif %}>{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-atrib-inc" style="margin-top:10px; width:100%; justify-content:center;">
+          Atribuir
+        </button>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">Informações</div>
+        <div class="meta-row">
+          <span class="meta-label">Serviço</span>
+          <span class="meta-value">{{ incidente.servico_afetado or '—' }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Impactados</span>
+          <span class="meta-value">{{ incidente.usuarios_impactados or '0' }} usuários</span>
+        </div>
+        {% if incidente.metodo_deteccao %}
+        <div class="meta-row">
+          <span class="meta-label">Detecção</span>
+          <span class="meta-value" style="font-size:11px;">{{ incidente.metodo_deteccao }}</span>
+        </div>
+        {% endif %}
+        <div class="meta-row">
+          <span class="meta-label">Criado por</span>
+          <span class="meta-value">{{ incidente.criado_por_nome or '—' }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Início</span>
+          <span class="meta-value" style="font-size:11px;">{{ incidente.inicio_em }}</span>
+        </div>
+        {% if incidente.mitigado_em %}
+        <div class="meta-row">
+          <span class="meta-label">Mitigado em</span>
+          <span class="meta-value" style="font-size:11px; color:#c9a1ec;">{{ incidente.mitigado_em }}</span>
+        </div>
+        {% endif %}
+        {% if incidente.resolvido_em %}
+        <div class="meta-row">
+          <span class="meta-label">Resolvido em</span>
+          <span class="meta-value" style="font-size:11px; color:var(--ok);">{{ incidente.resolvido_em }}</span>
+        </div>
+        {% endif %}
+        <div class="meta-row">
+          <span class="meta-label">Atualizado</span>
+          <span class="meta-value" style="font-size:11px;">{{ incidente.atualizado_em }}</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const incId = {{ incidente.id }};
+    const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+    async function patchInc(endpoint, body) {
+      const resp = await fetch(`/incidentes/${incId}/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrfToken() },
+        body: JSON.stringify(body),
+      });
+      if (resp.ok) window.location.reload();
+      else {
+        const d = await resp.json().catch(() => ({}));
+        alert(d.erro || "Erro ao atualizar.");
+      }
+    }
+
+    document.getElementById("btn-salvar-status-inc")?.addEventListener("click", () => {
+      patchInc("status", { status: document.getElementById("sel-status-inc").value });
+    });
+
+    document.getElementById("btn-salvar-sev-inc")?.addEventListener("click", () => {
+      patchInc("severidade", { severidade: document.getElementById("sel-sev-inc").value });
+    });
+
+    document.getElementById("btn-atribuir-mim-inc")?.addEventListener("click", () => {
+      patchInc("atribuir", { usuario_id: {{ session_user_id if session_user_id else 'null' }} });
+    });
+
+    document.getElementById("btn-salvar-atrib-inc")?.addEventListener("click", () => {
+      const val = document.getElementById("sel-atribuido-inc").value;
+      patchInc("atribuir", { usuario_id: val ? parseInt(val) : null });
+    });
+
+    document.getElementById("btn-excluir-inc")?.addEventListener("click", async () => {
+      if (!confirm("Excluir este incidente permanentemente?")) return;
+      const resp = await fetch(`/incidentes/${incId}`, {
+        method: "DELETE",
+        headers: { "X-CSRFToken": getCsrfToken() },
+      });
+      if (resp.ok) window.location.href = "/incidentes";
+      else alert("Erro ao excluir.");
+    });
+  </script>
+</body>
+</html>

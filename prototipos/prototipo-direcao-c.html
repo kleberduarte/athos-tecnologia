@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Athos Tecnologia — Protótipo Direção C (Identidade Híbrida)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;500;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* ——— zona A: institucional / cyberpunk (contido) ——— */
+  --bg-a:#0a0a0f;
+  --card-a:#12121a;
+  --fg-a:#e6e6e6;
+  --muted-a:#8b8f9a;
+  --border-a:#26262f;
+  --accent-a:#00ff88;
+  --accent-a-dim:rgba(0,255,136,.14);
+
+  /* ——— zona B: hardware enterprise / industrial ——— */
+  --bg-b:#12161c;
+  --card-b:#181e26;
+  --card-b-hover:#1d2530;
+  --fg-b:#eef1f4;
+  --muted-b:#8792a1;
+  --border-b:#2a323d;
+  --accent-b:#3d8bff;
+  --accent-b-dim:rgba(61,139,255,.14);
+  --ok-b:#2fd47a;
+
+  --font-brand:"Orbitron",sans-serif;
+  --font-mono:"JetBrains Mono",monospace;
+  --font-label:"Share Tech Mono",monospace;
+  --font-body:"Inter",sans-serif;
+
+  --max:1180px;
+  --chamfer:10px;
+  --chamfer-sm:6px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--font-body);
+  background:var(--bg-a);
+  color:var(--fg-a);
+  line-height:1.65;
+  overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+.container{max-width:var(--max);margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+
+/* chamfer util */
+.chamfer{clip-path:polygon(0 var(--chamfer),var(--chamfer) 0,calc(100% - var(--chamfer)) 0,100% var(--chamfer),100% calc(100% - var(--chamfer)),calc(100% - var(--chamfer)) 100%,var(--chamfer) 100%,0 calc(100% - var(--chamfer)))}
+.chamfer-sm{clip-path:polygon(0 var(--chamfer-sm),var(--chamfer-sm) 0,calc(100% - var(--chamfer-sm)) 0,100% var(--chamfer-sm),100% calc(100% - var(--chamfer-sm)),calc(100% - var(--chamfer-sm)) 100%,var(--chamfer-sm) 100%,0 calc(100% - var(--chamfer-sm)))}
+
+/* ——— ribbon de contexto do protótipo ——— */
+.proto-note{
+  background:#000; color:#8b8f9a; font-family:var(--font-label);
+  font-size:.68rem; letter-spacing:.08em; text-align:center;
+  padding:.55rem 1rem; border-bottom:1px solid var(--border-a);
+  text-transform:uppercase;
+}
+.proto-note strong{color:var(--accent-a)}
+
+/* ——— header ——— */
+header{
+  position:sticky; top:0; z-index:50;
+  background:rgba(10,10,15,.85); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border-a);
+}
+.header-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  height:64px;
+}
+.brand{
+  font-family:var(--font-brand); font-weight:900; font-size:.95rem;
+  letter-spacing:.08em; color:var(--fg-a);
+}
+.brand span{color:var(--accent-a)}
+nav ul{list-style:none; display:flex; gap:1.75rem}
+nav a{
+  font-family:var(--font-label); font-size:.68rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted-a); transition:color .15s;
+}
+nav a:hover{color:var(--accent-a)}
+@media (max-width:820px){ nav ul{display:none} }
+
+/* ============================================================
+   ZONA A — INSTITUCIONAL (cyberpunk contido)
+   ============================================================ */
+.zone-a{position:relative}
+.hero{
+  position:relative;
+  padding:clamp(4rem,10vh,6.5rem) 0 clamp(3.5rem,8vh,5rem);
+  background-image:
+    linear-gradient(rgba(0,255,136,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,136,.03) 1px,transparent 1px);
+  background-size:46px 46px;
+  overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;top:-10%;left:50%;transform:translateX(-50%);
+  width:820px;height:520px;
+  background:radial-gradient(ellipse at center,rgba(0,255,136,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero .container{position:relative}
+.eyebrow{
+  display:inline-flex; align-items:center; gap:.6rem;
+  font-family:var(--font-label); font-size:.7rem; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--accent-a); margin-bottom:1.5rem;
+}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--accent-a)}
+h1.hero-title{
+  font-family:var(--font-brand); font-weight:900; text-transform:uppercase;
+  font-size:clamp(2.1rem,5.4vw,3.6rem); line-height:1.08; letter-spacing:.01em;
+  max-width:14ch; margin-bottom:1.4rem;
+}
+h1.hero-title .glitch{
+  position:relative; color:var(--accent-a); display:inline-block;
+  animation:softGlitch 7s infinite;
+}
+@keyframes softGlitch{
+  0%,92%,100%{ text-shadow:0 0 18px rgba(0,255,136,.35) }
+  94%{ text-shadow:-1px 0 rgba(255,0,255,.4),1px 0 rgba(0,212,255,.4) }
+  96%{ text-shadow:1px 0 rgba(255,0,255,.3),-1px 0 rgba(0,212,255,.3) }
+}
+.hero-lead{color:var(--muted-a); max-width:46ch; font-size:1rem; margin-bottom:2rem}
+.actions{display:flex; gap:.9rem; flex-wrap:wrap}
+.btn{
+  display:inline-flex; align-items:center; gap:.5rem;
+  font-family:var(--font-label); font-size:.72rem; letter-spacing:.14em;
+  text-transform:uppercase; padding:.8rem 1.5rem; transition:filter .15s, transform .15s;
+}
+.btn-primary-a{background:var(--accent-a); color:#06110b; font-weight:700}
+.btn-primary-a:hover{filter:brightness(1.08); transform:translateY(-1px)}
+.btn-ghost-a{border:1px solid var(--border-a); color:var(--fg-a)}
+.btn-ghost-a:hover{border-color:var(--accent-a); color:var(--accent-a)}
+
+/* trust bar */
+.trust-bar{
+  border-top:1px solid var(--border-a); border-bottom:1px solid var(--border-a);
+  background:#0d0d13;
+  padding:1.4rem 0;
+}
+.trust-bar .container{
+  display:flex; flex-wrap:wrap; gap:1.25rem 2.5rem;
+  align-items:center; justify-content:space-between;
+}
+.trust-item{
+  display:flex; align-items:center; gap:.55rem;
+  font-family:var(--font-label); font-size:.68rem; letter-spacing:.08em;
+  color:var(--muted-a); text-transform:uppercase; white-space:nowrap;
+}
+.trust-item .num{font-family:var(--font-brand); color:var(--accent-a); font-size:.85rem}
+.trust-item svg{width:16px;height:16px;stroke:var(--accent-a);flex-shrink:0}
+
+/* ============================================================
+   TRANSIÇÃO ENTRE ZONAS
+   ============================================================ */
+.transition{
+  position:relative; height:120px;
+  background:linear-gradient(180deg,var(--bg-a) 0%, var(--bg-b) 100%);
+  display:flex; align-items:center; justify-content:center;
+  border-bottom:1px solid var(--border-b);
+}
+.transition-label{
+  font-family:var(--font-label); font-size:.66rem; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--muted-b);
+  display:flex; align-items:center; gap:.7rem;
+}
+.transition-label::before,.transition-label::after{
+  content:""; width:60px; height:1px; background:var(--border-b);
+}
+
+/* ============================================================
+   ZONA B — HARDWARE ENTERPRISE (industrial / trust)
+   ============================================================ */
+.zone-b{background:var(--bg-b); color:var(--fg-b)}
+.zone-b .section{padding:clamp(3.5rem,8vh,5.5rem) 0}
+.zone-b .eyebrow-b{
+  display:inline-flex; align-items:center; gap:.6rem;
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--accent-b); margin-bottom:1.1rem;
+}
+.zone-b .eyebrow-b::before{content:"";width:28px;height:1px;background:var(--accent-b)}
+.zone-b h2{
+  font-family:var(--font-body); font-weight:700; letter-spacing:-.01em;
+  font-size:clamp(1.7rem,3.4vw,2.5rem); max-width:20ch; margin-bottom:.9rem;
+}
+.zone-b .section-sub{color:var(--muted-b); max-width:56ch; font-size:.98rem; margin-bottom:2.5rem}
+
+/* selos de fabricantes parceiros */
+.partners{
+  display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:3rem;
+}
+.partner-badge{
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.04em;
+  color:var(--muted-b); border:1px solid var(--border-b);
+  padding:.5rem 1rem; border-radius:4px; background:var(--card-b);
+}
+.partner-badge b{color:var(--fg-b); font-weight:600}
+
+/* grid de produtos */
+.prod-grid{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:1.1rem; margin-bottom:3rem;
+}
+.prod-card{
+  background:var(--card-b); border:1px solid var(--border-b); border-radius:6px;
+  display:flex; flex-direction:column; overflow:hidden;
+  transition:border-color .2s, transform .2s, background .2s;
+}
+.prod-card:hover{border-color:var(--accent-b); transform:translateY(-3px); background:var(--card-b-hover)}
+.prod-card__img{
+  height:150px; background:#0d1117; display:flex; align-items:center; justify-content:center;
+  position:relative; border-bottom:1px solid var(--border-b);
+}
+.prod-card__img svg{width:52px;height:52px;stroke:var(--border-b)}
+.stock-badge{
+  position:absolute; top:.65rem; left:.65rem;
+  font-family:var(--font-mono); font-size:.62rem; letter-spacing:.05em;
+  padding:.22rem .55rem; border-radius:3px; text-transform:uppercase;
+  display:flex; align-items:center; gap:.35rem;
+}
+.stock-badge.in{background:rgba(47,212,122,.12); color:var(--ok-b); border:1px solid rgba(47,212,122,.35)}
+.stock-badge.consult{background:rgba(135,146,161,.12); color:var(--muted-b); border:1px solid var(--border-b)}
+.stock-badge .dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+.prod-card__body{padding:1.1rem 1.2rem 1.3rem; display:flex; flex-direction:column; gap:.6rem; flex:1}
+.prod-card__cat{font-family:var(--font-mono); font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent-b)}
+.prod-card__name{font-size:1rem; font-weight:600}
+.prod-card__model{font-family:var(--font-mono); font-size:.72rem; color:var(--muted-b)}
+.prod-card__specs{list-style:none; display:flex; flex-direction:column; gap:.3rem; margin:.3rem 0 .7rem; flex:1}
+.prod-card__specs li{
+  font-size:.8rem; color:var(--muted-b); display:flex; gap:.5rem; align-items:flex-start;
+}
+.prod-card__specs li::before{content:"";width:4px;height:4px;border-radius:50%;background:var(--accent-b); margin-top:.5rem; flex-shrink:0}
+.prod-card__cta{
+  display:flex; align-items:center; justify-content:center; gap:.4rem;
+  font-family:var(--font-mono); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;
+  border:1px solid var(--border-b); padding:.65rem; border-radius:4px; color:var(--fg-b);
+  transition:border-color .15s, color .15s, background .15s;
+}
+.prod-card__cta:hover{border-color:var(--accent-b); color:var(--accent-b); background:var(--accent-b-dim)}
+
+/* banner RFQ enterprise */
+.rfq-banner{
+  background:var(--card-b); border:1px solid var(--border-b); border-radius:8px;
+  padding:clamp(1.75rem,4vw,3rem); display:grid; grid-template-columns:1.1fr .9fr; gap:2.5rem;
+  align-items:center; position:relative; overflow:hidden;
+}
+.rfq-banner::before{
+  content:""; position:absolute; top:0; left:0; width:3px; height:100%;
+  background:var(--accent-b);
+}
+@media (max-width:760px){ .rfq-banner{grid-template-columns:1fr} }
+.rfq-banner h3{font-size:1.35rem; font-weight:700; margin-bottom:.7rem}
+.rfq-banner p{color:var(--muted-b); font-size:.92rem; margin-bottom:1.3rem; max-width:44ch}
+.rfq-list{list-style:none; display:flex; flex-direction:column; gap:.65rem}
+.rfq-list li{display:flex; gap:.65rem; align-items:flex-start; font-size:.86rem; color:var(--fg-b)}
+.rfq-list svg{width:18px;height:18px; stroke:var(--accent-b); flex-shrink:0; margin-top:1px}
+.btn-primary-b{
+  display:inline-flex; align-items:center; gap:.5rem; margin-top:1.5rem;
+  background:var(--accent-b); color:#071322; font-weight:600; font-size:.85rem;
+  padding:.85rem 1.6rem; border-radius:4px; transition:filter .15s, transform .15s;
+}
+.btn-primary-b:hover{filter:brightness(1.08); transform:translateY(-1px)}
+
+/* certificações footer */
+.trust-footer{
+  border-top:1px solid var(--border-b); padding:2.2rem 0; background:#0e1116;
+}
+.trust-footer .container{
+  display:flex; flex-wrap:wrap; justify-content:space-between; gap:1.5rem;
+}
+.legal-block p{font-size:.78rem; color:var(--muted-b); line-height:1.7}
+.legal-block strong{color:var(--fg-b)}
+.cert-row{display:flex; gap:.6rem; flex-wrap:wrap; align-items:flex-start}
+.cert-badge{
+  display:flex; align-items:center; gap:.4rem;
+  font-family:var(--font-mono); font-size:.68rem; color:var(--muted-b);
+  border:1px solid var(--border-b); padding:.4rem .75rem; border-radius:4px;
+}
+.cert-badge svg{width:14px;height:14px; stroke:var(--accent-b)}
+
+/* legendas de anotação do protótipo */
+.annot{
+  position:absolute; top:-1.6rem; left:0;
+  font-family:var(--font-label); font-size:.62rem; letter-spacing:.1em;
+  text-transform:uppercase; color:#555;
+}
+</style>
+</head>
+<body>
+
+<div class="proto-note">Protótipo de identidade visual · <strong>Direção C — híbrida</strong> · conteúdo e marcas de exemplo, ajustar antes de publicar</div>
+
+<header>
+  <div class="container header-bar">
+    <div class="brand">ATHOS<span>.</span>TECNOLOGIA</div>
+    <nav><ul>
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#servicos">Serviços</a></li>
+      <li><a href="#hardware">Hardware</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul></nav>
+  </div>
+</header>
+
+<!-- ============ ZONA A — INSTITUCIONAL ============ -->
+<div class="zone-a" id="inicio">
+  <section class="hero">
+    <div class="container">
+      <p class="eyebrow">Arquitetura · Dados · Produtos Digitais</p>
+      <h1 class="hero-title">Engenharia para demandas <span class="glitch">exigentes</span></h1>
+      <p class="hero-lead">Desenvolvemos soluções digitais com profundidade técnica, segurança e escala — e agora também equipamos a operação da sua empresa com hardware de ponta.</p>
+      <div class="actions">
+        <a class="btn btn-primary-a" href="#servicos">Nossos serviços</a>
+        <a class="btn btn-ghost-a" href="#hardware">Ver catálogo de hardware</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-item"><span class="num">+8</span> anos de mercado</div>
+      <div class="trust-item"><span class="num">+50</span> projetos entregues</div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
+        Conformidade LGPD
+      </div>
+      <div class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        SLA de suporte 24/7
+      </div>
+      <div class="trust-item">Empresa do Grupo DOC Partners</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ TRANSIÇÃO ============ -->
+<div class="transition">
+  <p class="transition-label">Athos Hardware — divisão enterprise</p>
+</div>
+
+<!-- ============ ZONA B — HARDWARE ENTERPRISE ============ -->
+<div class="zone-b" id="hardware">
+
+  <section class="section">
+    <div class="container">
+      <p class="eyebrow-b">Revenda autorizada de hardware</p>
+      <h2>Equipamentos para operações que não podem parar</h2>
+      <p class="section-sub">Coletores de dados, impressoras térmicas, RFID e autoatendimento — selecionados para varejo, saúde, logística e manufatura, com suporte técnico da mesma equipe que constrói o seu software.</p>
+
+      <div class="partners">
+        <span class="partner-badge">Parceiro autorizado <b>Zebra</b></span>
+        <span class="partner-badge">Parceiro autorizado <b>Honeywell</b></span>
+        <span class="partner-badge">Parceiro autorizado <b>Elgin</b></span>
+        <span class="partner-badge">Parceiro autorizado <b>Datalogic</b></span>
+      </div>
+
+      <div class="prod-grid">
+        <article class="prod-card">
+          <div class="prod-card__img">
+            <span class="stock-badge in"><span class="dot"></span>Em estoque</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h5"/></svg>
+          </div>
+          <div class="prod-card__body">
+            <span class="prod-card__cat">Coletor de dados</span>
+            <h3 class="prod-card__name">Coletor industrial TC-52</h3>
+            <p class="prod-card__model">Ref. modelo · classe IP65</p>
+            <ul class="prod-card__specs">
+              <li>Leitura 1D/2D de longo alcance</li>
+              <li>Bateria para turno de 12h</li>
+              <li>Resistente a queda de 1,8m</li>
+            </ul>
+            <a class="prod-card__cta" href="#contato">Solicitar cotação</a>
+          </div>
+        </article>
+
+        <article class="prod-card">
+          <div class="prod-card__img">
+            <span class="stock-badge in"><span class="dot"></span>Em estoque</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>
+          </div>
+          <div class="prod-card__body">
+            <span class="prod-card__cat">Impressora térmica</span>
+            <h3 class="prod-card__name">Impressora térmica ZT-410</h3>
+            <p class="prod-card__model">Ref. modelo · 300 dpi</p>
+            <ul class="prod-card__specs">
+              <li>Impressão de etiquetas em alta escala</li>
+              <li>Integração nativa com ERP</li>
+              <li>Manutenção preventiva incluída</li>
+            </ul>
+            <a class="prod-card__cta" href="#contato">Solicitar cotação</a>
+          </div>
+        </article>
+
+        <article class="prod-card">
+          <div class="prod-card__img">
+            <span class="stock-badge consult"><span class="dot"></span>Sob consulta</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <div class="prod-card__body">
+            <span class="prod-card__cat">RFID</span>
+            <h3 class="prod-card__name">Antena RFID fixa RF-820</h3>
+            <p class="prod-card__model">Ref. modelo · UHF Gen2</p>
+            <ul class="prod-card__specs">
+              <li>Leitura simultânea de múltiplas tags</li>
+              <li>Ideal para controle de estoque em tempo real</li>
+              <li>Instalação e calibração assistida</li>
+            </ul>
+            <a class="prod-card__cta" href="#contato">Solicitar cotação</a>
+          </div>
+        </article>
+
+        <article class="prod-card">
+          <div class="prod-card__img">
+            <span class="stock-badge in"><span class="dot"></span>Em estoque</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 18h6"/></svg>
+          </div>
+          <div class="prod-card__body">
+            <span class="prod-card__cat">Autoatendimento</span>
+            <h3 class="prod-card__name">Totem de autoatendimento K-22</h3>
+            <p class="prod-card__model">Ref. modelo · tela 22"</p>
+            <ul class="prod-card__specs">
+              <li>Pagamento integrado (PIX, cartão)</li>
+              <li>Interface personalizável com sua marca</li>
+              <li>Suporte remoto incluído no contrato</li>
+            </ul>
+            <a class="prod-card__cta" href="#contato">Solicitar cotação</a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Banner RFQ / grandes empresas -->
+      <div class="rfq-banner" id="contato">
+        <div>
+          <h3>Compra em volume para grandes empresas</h3>
+          <p>Times de compras corporativas contam com gerente de conta dedicado, contrato de SLA e nota fiscal centralizada — do orçamento à instalação em todas as unidades.</p>
+          <a class="btn-primary-b" href="#">Falar com o time enterprise
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <ul class="rfq-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg> Gerente de conta dedicado</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg> SLA de entrega e garantia estendida</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg> Cotação e faturamento por CNPJ</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M20 6 9 17l-5-5"/></svg> Suporte técnico pela mesma equipe de software</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="trust-footer">
+    <div class="container">
+      <div class="legal-block">
+        <p><strong>Athos Tecnologia</strong> — Empresa do Grupo DOC Partners</p>
+        <p>CNPJ 00.000.000/0001-00 · [endereço completo] · [telefone comercial]</p>
+        <p>Dados protegidos conforme a LGPD — política de privacidade disponível no rodapé do site.</p>
+      </div>
+      <div class="cert-row">
+        <span class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/></svg>LGPD</span>
+        <span class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>ISO 27001*</span>
+        <span class="cert-badge"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>SLA 99,9%</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

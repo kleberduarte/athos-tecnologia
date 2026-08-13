@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>#{{ '%04d'|format(chamado.id) }} — {{ chamado.titulo }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="breadcrumb-bar">
+    <a class="back-link" href="{{ url_for('board') }}">&#8592; Voltar ao board</a>
+    <span class="breadcrumb-sep">|</span>
+    <span class="breadcrumb-id">#{{ '%04d'|format(chamado.id) }}</span>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% set STATUS_LABEL_ALL = {'aberto':'Aberto','andamento':'Em andamento','aguardando':'Aguardando','impedido':'Com impedimento','resolvido':'Resolvido','cancelado':'Cancelado'} %}
+
+  <div class="page-header">
+    <div style="flex:1; min-width:0;">
+      <div class="page-title" style="font-size:20px; word-break:break-word;">{{ chamado.titulo }}</div>
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:8px;">
+        {# BUG-01 fix — dicionário completo com todos os status #}
+        <span class="badge s-{{ chamado.status }}">{{ STATUS_LABEL_ALL[chamado.status] }}</span>
+        <span class="card-priority p-{{ chamado.prioridade }}">{{ {'alta':'Crítico','media':'Urgente','baixa':'Comum'}[chamado.prioridade] }}</span>
+        {% if chamado.setor_nome %}<span class="tag">{{ chamado.setor_nome }}</span>{% endif %}
+        <span class="breadcrumb-id" style="margin-left:4px;">{{ chamado.tempo_aberto }}</span>
+      </div>
+    </div>
+    {% if usuario_papel == 'admin' %}
+    <div style="flex-shrink:0;">
+      <button class="btn btn-ghost btn-sm" id="btn-excluir" style="color:#ff8099; border-color:rgba(255,51,102,0.3);">
+        Excluir chamado
+      </button>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="detail-grid">
+
+    <!-- ===== MAIN ===== -->
+    <div class="detail-main">
+
+      <div class="detail-card">
+        <div class="detail-card-title">Descrição</div>
+        {% if chamado.descricao %}
+        <div class="chamado-desc">{{ chamado.descricao }}</div>
+        {% else %}
+        <div class="chamado-desc vazio">Sem descrição fornecida.</div>
+        {% endif %}
+
+        {% if chamado.anexo %}
+        {% set ext_ev = chamado.anexo.rsplit('.', 1)[-1].lower() %}
+        <div class="tl-attachment" style="margin-top:14px; padding-top:12px; border-top:1px solid var(--navy-border);">
+          <span class="field-label" style="display:block; margin-bottom:8px;">Evidência anexada</span>
+          {% if ext_ev in ['jpg','jpeg','png','gif','webp'] %}
+            <a href="{{ url_for('static', filename='uploads/' + chamado.anexo) }}" target="_blank" rel="noopener" class="attach-img-link" style="display:block; margin-bottom:8px;">
+              <img src="{{ url_for('static', filename='uploads/' + chamado.anexo) }}" class="attach-thumb" alt="{{ chamado.anexo_nome or 'evidência' }}" style="max-width:100%; max-height:260px; border-radius:4px;">
+            </a>
+          {% endif %}
+          <a href="{{ url_for('static', filename='uploads/' + chamado.anexo) }}" target="_blank" rel="noopener" download="{{ chamado.anexo_nome or chamado.anexo }}" class="attach-link">
+            &#128206; {{ chamado.anexo_nome or chamado.anexo }}
+          </a>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">
+          {% if usuario_papel == 'solicitante' %}Acompanhamento do chamado{% else %}Histórico &amp; Comentários{% endif %}
+        </div>
+        <div class="timeline">
+
+          {% set STATUS_LABEL = {'aberto':'Aberto','andamento':'Em andamento','aguardando':'Aguardando','impedido':'Com impedimento','resolvido':'Resolvido','cancelado':'Cancelado'} %}
+
+          {% for ev in timeline %}
+          <div class="tl-item">
+            {% if not loop.last %}<div class="tl-connector"></div>{% endif %}
+
+            {% if ev.tipo == 'comentario' %}
+              <div class="tl-icon ti-comment">{{ ev.usuario_nome | iniciais }}</div>
+              <div class="tl-body">
+                <div class="tl-header">
+                  <span class="tl-user">{{ ev.usuario_nome or 'Sistema' }}</span>
+                  <span class="tl-time">{{ ev.tempo }}</span>
+                </div>
+                {% if ev.texto %}<div class="tl-comment-box">{{ ev.texto }}</div>{% endif %}
+                {% if ev.anexo %}
+                {% set ext = ev.anexo.rsplit('.', 1)[-1].lower() %}
+                <div class="tl-attachment">
+                  {% if ext in ['jpg','jpeg','png','gif','webp'] %}
+                    <a href="{{ url_for('static', filename='uploads/' + ev.anexo) }}" target="_blank" rel="noopener" class="attach-img-link">
+                      <img src="{{ url_for('static', filename='uploads/' + ev.anexo) }}" class="attach-thumb" alt="{{ ev.anexo_nome or 'imagem' }}">
+                    </a>
+                  {% endif %}
+                  <a href="{{ url_for('static', filename='uploads/' + ev.anexo) }}" target="_blank" rel="noopener" download="{{ ev.anexo_nome or ev.anexo }}" class="attach-link">
+                    &#128206; {{ ev.anexo_nome or ev.anexo }}
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+
+            {% else %}
+              <div class="tl-icon ti-mov">&#8644;</div>
+              <div class="tl-body">
+                <div class="tl-header">
+                  <span class="tl-user">{{ ev.usuario_nome or 'Sistema' }}</span>
+                  <span class="tl-time">{{ ev.tempo }}</span>
+                </div>
+                <div class="tl-mov-badges">
+                  {% if ev.status_anterior %}
+                    <span class="badge s-{{ ev.status_anterior }}">{{ STATUS_LABEL[ev.status_anterior] }}</span>
+                    <span class="tl-arrow">&#8594;</span>
+                  {% else %}
+                    <span class="tl-arrow" style="margin-left:0;">Criado como</span>
+                  {% endif %}
+                  <span class="badge s-{{ ev.status_novo }}">{{ STATUS_LABEL[ev.status_novo] }}</span>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          <!-- Formulário de comentário -->
+          <div class="tl-item">
+            <div class="tl-icon ti-comment" style="border-color:var(--navy-border);">{{ usuario_iniciais }}</div>
+            <div class="tl-body">
+              <form method="post" action="{{ url_for('adicionar_comentario', chamado_id=chamado.id) }}" enctype="multipart/form-data" id="form-comentario">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <textarea class="field-input" name="texto" id="comentario-texto" placeholder="Adicionar um comentário..." style="min-height:72px; resize:vertical; margin-bottom:0;"></textarea>
+
+                <!-- Zona de anexo -->
+                <div class="attach-zone" id="attach-zone">
+                  <input type="file" id="attach-input" name="arquivo" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;">
+                  <label for="attach-input" class="attach-btn" title="Anexar arquivo (máx. 10 MB)">
+                    &#128206; Anexar
+                  </label>
+                  <span class="attach-filename" id="attach-filename"></span>
+                  <button type="button" class="attach-clear" id="attach-clear" title="Remover anexo" style="display:none;">&#215;</button>
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                  <button type="submit" class="btn btn-primary btn-sm" id="btn-comentar">Comentar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="detail-sidebar">
+
+      <div class="detail-card">
+        <div class="detail-card-title">Status</div>
+        {% if usuario_papel == 'solicitante' %}
+          {% set STATUS_LABEL_ALL = {'aberto':'Aberto','andamento':'Em andamento','aguardando':'Aguardando','impedido':'Com impedimento','resolvido':'Resolvido','cancelado':'Cancelado'} %}
+          <span class="badge s-{{ chamado.status }}" style="margin-top:4px; display:inline-block;">{{ STATUS_LABEL_ALL[chamado.status] }}</span>
+        {% elif chamado.status == 'cancelado' %}
+          <div class="badge s-cancelado" style="margin-bottom:10px;">Cancelado — estado final</div>
+          <p style="font-size:11px; color:var(--text-low); font-family:var(--font-label); line-height:1.5;">
+            Chamados cancelados não podem ser reabertos.
+          </p>
+        {% else %}
+        <select class="field-input" id="sel-status" style="margin-top:0;">
+          {% for s, label in [('aberto','Aberto'),('andamento','Em andamento'),('aguardando','Aguardando solicitante'),('impedido','Com impedimento'),('resolvido','Resolvido'),('cancelado','Cancelado')] %}
+          <option value="{{ s }}" {% if chamado.status == s %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-status" style="margin-top:10px; width:100%; justify-content:center;">
+          Salvar status
+        </button>
+        {% endif %}
+      </div>
+
+      {% if usuario_papel != 'solicitante' %}
+      <div class="detail-card">
+        <div class="detail-card-title">Prioridade</div>
+        <select class="field-input" id="sel-prioridade" style="margin-top:0;">
+          <option value="baixa" {% if chamado.prioridade == 'baixa' %}selected{% endif %}>Comum (SLA 48h)</option>
+          <option value="media" {% if chamado.prioridade == 'media' %}selected{% endif %}>Urgente (SLA 24h)</option>
+          <option value="alta"  {% if chamado.prioridade == 'alta'  %}selected{% endif %}>Crítico (SLA 4h)</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-prioridade" style="margin-top:10px; width:100%; justify-content:center;">
+          Salvar prioridade
+        </button>
+      </div>
+      {% endif %}
+
+      {% if usuario_papel != 'solicitante' %}
+      <div class="detail-card">
+        <div class="detail-card-title">Atribuição</div>
+        <button class="btn btn-ghost btn-sm" id="btn-atribuir-mim" style="width:100%; justify-content:center; margin-bottom:8px;">
+          &#128100; Atribuir a mim
+        </button>
+        <select class="field-input" id="sel-atribuido" style="margin-top:0;">
+          <option value="">Não atribuído</option>
+          {% for u in usuarios %}
+          <option value="{{ u.id }}" {% if chamado.atribuido_a == u.id %}selected{% endif %}>{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+        <button class="btn btn-ghost btn-sm" id="btn-salvar-atribuicao" style="margin-top:10px; width:100%; justify-content:center;">
+          Atribuir
+        </button>
+      </div>
+
+      <div class="detail-card">
+        <div class="detail-card-title">SLA</div>
+        <div class="sla-bar-track {{ chamado.sla.classe }}" style="margin-top:4px; margin-bottom:6px;">
+          <div class="sla-bar-fill" style="width:{{ chamado.sla.percentual }}%"></div>
+        </div>
+        <div class="sla-label {{ chamado.sla.classe }}">
+          <span>{{ chamado.sla.rotulo }}</span>
+          <span>{{ chamado.sla.detalhe }}</span>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="detail-card">
+        <div class="detail-card-title">Informações</div>
+        {% if usuario_papel == 'solicitante' %}
+          <div class="meta-row">
+            <span class="meta-label">Atribuído a</span>
+            <span class="meta-value">{{ chamado.atribuido_nome or '—' }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Aberto em</span>
+            <span class="meta-value" style="font-size:11px;">{{ chamado.criado_em }}</span>
+          </div>
+          {% if chamado.resolvido_em %}
+          <div class="meta-row">
+            <span class="meta-label">Resolvido em</span>
+            <span class="meta-value" style="font-size:11px; color:var(--ok);">{{ chamado.resolvido_em }}</span>
+          </div>
+          {% endif %}
+        {% else %}
+          <div class="meta-row">
+            <span class="meta-label">Criado por</span>
+            <span class="meta-value">{{ chamado.criado_por_nome or '—' }}</span>
+          </div>
+          {% if chamado.solicitante_setor %}
+          <div class="meta-row">
+            <span class="meta-label">Setor solicitante</span>
+            <span class="meta-value">{{ chamado.solicitante_setor }}</span>
+          </div>
+          {% endif %}
+          <div class="meta-row">
+            <span class="meta-label">Atribuído a</span>
+            <span class="meta-value">{{ chamado.atribuido_nome or '—' }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Setor</span>
+            <span class="meta-value">{{ chamado.setor_nome or '—' }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">SLA</span>
+            <span class="meta-value">{{ chamado.sla_horas }}h</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Criado em</span>
+            <span class="meta-value" style="font-size:11px;">{{ chamado.criado_em }}</span>
+          </div>
+          <div class="meta-row">
+            <span class="meta-label">Atualizado</span>
+            <span class="meta-value" style="font-size:11px;">{{ chamado.atualizado_em }}</span>
+          </div>
+          {% if chamado.resolvido_em %}
+          <div class="meta-row">
+            <span class="meta-label">Resolvido em</span>
+            <span class="meta-value" style="font-size:11px; color:var(--ok);">{{ chamado.resolvido_em }}</span>
+          </div>
+          {% endif %}
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const chamadoId = {{ chamado.id }};
+    const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+
+    document.getElementById("btn-salvar-status")?.addEventListener("click", async () => {
+      const status = document.getElementById("sel-status").value;
+      const resp = await fetch(`/chamados/${chamadoId}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrfToken() },
+        body: JSON.stringify({ status }),
+      });
+      if (resp.ok) window.location.reload();
+      else {
+        const data = await resp.json().catch(() => ({}));
+        alert(data.erro || "Não foi possível atualizar o status.");
+      }
+    });
+
+    document.getElementById("btn-salvar-prioridade")?.addEventListener("click", async () => {
+      const prioridade = document.getElementById("sel-prioridade").value;
+      const resp = await fetch(`/chamados/${chamadoId}/prioridade`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrfToken() },
+        body: JSON.stringify({ prioridade }),
+      });
+      if (resp.ok) window.location.reload();
+      else {
+        const data = await resp.json().catch(() => ({}));
+        alert(data.erro || "Não foi possível atualizar a prioridade.");
+      }
+    });
+
+    async function salvarAtribuicao(usuario_id) {
+      const resp = await fetch(`/chamados/${chamadoId}/atribuir`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": getCsrfToken() },
+        body: JSON.stringify({ usuario_id: usuario_id || null }),
+      });
+      if (resp.ok) window.location.reload();
+      else {
+        const data = await resp.json().catch(() => ({}));
+        alert(data.erro || "Não foi possível atualizar a atribuição.");
+      }
+    }
+
+    document.getElementById("btn-atribuir-mim")?.addEventListener("click", () => {
+      salvarAtribuicao({{ usuario_id }});
+    });
+
+    document.getElementById("btn-salvar-atribuicao")?.addEventListener("click", () => {
+      const usuario_id = document.getElementById("sel-atribuido").value;
+      salvarAtribuicao(usuario_id);
+    });
+
+    {% if usuario_papel == 'admin' %}
+    document.getElementById("btn-excluir")?.addEventListener("click", async () => {
+      if (!confirm("Excluir este chamado permanentemente? Esta ação não pode ser desfeita.")) return;
+      const resp = await fetch(`/chamados/${chamadoId}`, {
+        method: "DELETE",
+        headers: { "X-CSRFToken": getCsrfToken() },
+      });
+      if (resp.ok) window.location.href = "{{ url_for('board') }}";
+    });
+    {% endif %}
+
+    // ── Anexo: preview e validação ──
+    const attachInput  = document.getElementById("attach-input");
+    const attachName   = document.getElementById("attach-filename");
+    const attachClear  = document.getElementById("attach-clear");
+    const formComent   = document.getElementById("form-comentario");
+    const textoArea    = document.getElementById("comentario-texto");
+
+    attachInput?.addEventListener("change", () => {
+      const f = attachInput.files[0];
+      if (!f) return;
+      const MAX = 10 * 1024 * 1024;
+      if (f.size > MAX) {
+        alert("Arquivo muito grande. O limite é 10 MB.");
+        attachInput.value = "";
+        return;
+      }
+      attachName.textContent = f.name;
+      attachClear.style.display = "inline-flex";
+    });
+
+    attachClear?.addEventListener("click", () => {
+      attachInput.value = "";
+      attachName.textContent = "";
+      attachClear.style.display = "none";
+    });
+
+    formComent?.addEventListener("submit", (e) => {
+      const temTexto  = textoArea.value.trim().length > 0;
+      const temAnexo  = attachInput.files.length > 0;
+      if (!temTexto && !temAnexo) {
+        e.preventDefault();
+        textoArea.focus();
+        textoArea.style.borderColor = "var(--danger)";
+        setTimeout(() => { textoArea.style.borderColor = ""; }, 2000);
+      }
+    });
+  </script>
+</body>
+</html>

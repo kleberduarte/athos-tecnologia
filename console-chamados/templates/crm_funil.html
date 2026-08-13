@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Funil CRM — Hub Servisdesk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Funil de <span>Oportunidades</span></div>
+      <div class="page-meta">Kanban comercial · arraste as oportunidades entre os estágios</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-nova-op">+ Nova oportunidade</button>
+    </div>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- KPI rápido -->
+  <div class="kpi-row" style="grid-template-columns: repeat(5, 1fr);">
+    {% for estagio in estagios %}
+    <div class="kpi-card">
+      <div class="kpi-label">{{ estagio }}</div>
+      <div class="kpi-value">{{ colunas[estagio]|length }} <small>ops</small></div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Board kanban -->
+  <div class="board" style="grid-template-columns: repeat(5, minmax(220px,1fr));">
+    {% for estagio in estagios %}
+    <div class="column col-{{ estagio }}" data-estagio="{{ estagio }}">
+      <div class="column-head">
+        <div class="col-title-wrap">
+          <div class="col-dot"></div>
+          <div class="col-title">{{ estagio }}</div>
+        </div>
+        <div class="col-count">{{ colunas[estagio]|length }}</div>
+      </div>
+      <div class="column-body" data-estagio="{{ estagio }}">
+        {% if not colunas[estagio] %}
+        <div class="column-empty">sem oportunidades</div>
+        {% endif %}
+        {% for op in colunas[estagio] %}
+        <div class="card" draggable="true" data-id="{{ op.id }}">
+          <div class="card-top">
+            <div class="card-id">#OP-{{ '%04d'|format(op.id) }}</div>
+            {% if op.estagio == 'Fechado' %}
+            <span style="font-size:11px; color:var(--amber);">&#10003;</span>
+            {% elif op.estagio == 'Perdido' %}
+            <span style="font-size:11px; color:var(--danger);">&#10007;</span>
+            {% endif %}
+          </div>
+          <div style="font-size:12px; font-weight:600; margin: 6px 0 4px; color:var(--text-hi); line-height:1.35;">{{ op.titulo }}</div>
+          <div style="font-size:11px; color:var(--text-mid); margin-bottom:6px;">{{ op.cliente_nome }}</div>
+          {% if op.valor_estimado %}
+          <div class="crm-valor" style="font-size:14px; margin-bottom:4px;">R$ {{ '{:,.2f}'.format(op.valor_estimado).replace(',', 'X').replace('.', ',').replace('X', '.') }}</div>
+          {% endif %}
+          <div style="font-size:10px; color:var(--text-low); font-family:var(--font-label); display:flex; justify-content:space-between; margin-top:6px;">
+            <span>{{ op.responsavel_nome or 'Sem responsável' }}</span>
+            <span>{{ op.criado_em[:10] }}</span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Modal nova oportunidade -->
+  <div class="modal-overlay" id="modal-nova-op">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Nova Oportunidade</div>
+        <button class="icon-btn" id="btn-cancelar-op" type="button">&#10005;</button>
+      </div>
+      <form method="post" action="{{ url_for('crm_criar_oportunidade') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body">
+          <label class="field-label">Título *</label>
+          <input class="field-input" type="text" name="titulo" required placeholder="Descreva a oportunidade">
+
+          <label class="field-label">Cliente *</label>
+          <select class="field-input" name="cliente_id" required id="select-cliente-op">
+            <option value="">Selecione um cliente…</option>
+          </select>
+          <div style="margin-top:-8px; margin-bottom:12px;">
+            <a href="{{ url_for('crm_clientes') }}" style="font-size:10px; color:var(--accent-cyan);">+ Cadastrar novo cliente</a>
+          </div>
+
+          <label class="field-label">Valor estimado (R$)</label>
+          <input class="field-input" type="number" name="valor_estimado" step="0.01" min="0" placeholder="0.00">
+
+          <label class="field-label">Estágio</label>
+          <select class="field-input" name="estagio">
+            {% for e in estagios %}
+            <option value="{{ e }}">{{ e }}</option>
+            {% endfor %}
+          </select>
+
+          <label class="field-label">Responsável</label>
+          <select class="field-input" name="responsavel_id" id="select-resp-op">
+            <option value="">Nenhum</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" type="button" id="btn-cancelar-op2">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Criar oportunidade</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+// Popula os selects do modal com os dados disponíveis
+(function() {
+  const clientes = {{ colunas.values()|sum(start=[])|map(attribute='cliente_nome')|list|unique|list|tojson }};
+  // Os dados de clientes/usuários precisam ser carregados do servidor
+  // Carregamos via fetch para não expor dados desnecessários no HTML
+})();
+</script>
+<script>
+// Preenche selects do modal com dados embutidos
+(function() {
+  const clientesData = {{ colunas_json|default('[]')|safe }};
+})();
+</script>
+<script>
+// Modal controls
+const modalOp = document.getElementById('modal-nova-op');
+document.getElementById('btn-nova-op').addEventListener('click', () => {
+  // Carrega clientes e usuários via fetch antes de abrir
+  Promise.all([
+    fetch('/crm/_clientes_json').then(r => r.json()).catch(() => []),
+    fetch('/crm/_usuarios_json').then(r => r.json()).catch(() => []),
+  ]).then(([clientes, usuarios]) => {
+    const selCli = document.getElementById('select-cliente-op');
+    selCli.innerHTML = '<option value="">Selecione um cliente…</option>';
+    clientes.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.nome + (c.empresa ? ' · ' + c.empresa : '');
+      selCli.appendChild(opt);
+    });
+    const selResp = document.getElementById('select-resp-op');
+    selResp.innerHTML = '<option value="">Nenhum</option>';
+    usuarios.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.id;
+      opt.textContent = u.nome;
+      selResp.appendChild(opt);
+    });
+    modalOp.classList.add('open');
+  });
+});
+document.getElementById('btn-cancelar-op').addEventListener('click', () => modalOp.classList.remove('open'));
+document.getElementById('btn-cancelar-op2').addEventListener('click', () => modalOp.classList.remove('open'));
+modalOp.addEventListener('click', e => { if (e.target === modalOp) modalOp.classList.remove('open'); });
+</script>
+<script src="{{ url_for('static', filename='js/crm_funil.js') }}"></script>
+</body>
+</html>

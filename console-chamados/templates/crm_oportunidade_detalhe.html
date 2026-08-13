@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>#OP-{{ '%04d'|format(op.id) }} — {{ op.titulo }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="breadcrumb-bar">
+    <a class="back-link" href="{{ url_for('crm_funil') }}">&#8592; Funil CRM</a>
+    <span class="breadcrumb-sep">|</span>
+    <a class="back-link" href="{{ url_for('crm_cliente_detalhe', cliente_id=op.cliente_id) }}">{{ op.cliente_nome }}</a>
+    <span class="breadcrumb-sep">|</span>
+    <span class="breadcrumb-id">#OP-{{ '%04d'|format(op.id) }}</span>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        {{ op.titulo }}
+        <span class="badge estagio-{{ op.estagio }}" style="font-size:12px; padding:3px 10px; border-radius:4px; margin-left:8px; vertical-align:middle;">{{ op.estagio }}</span>
+      </div>
+      <div class="page-meta">
+        Cliente: <a href="{{ url_for('crm_cliente_detalhe', cliente_id=op.cliente_id) }}" style="color:var(--accent-cyan); text-decoration:none;">{{ op.cliente_nome }}</a>
+        · criada em {{ op.criado_em[:10] }}
+        · atualizada em {{ op.atualizado_em[:10] }}
+      </div>
+    </div>
+  </div>
+
+  <div class="crm-detail-grid">
+
+    <!-- Formulário de edição -->
+    <div class="crm-detail-card">
+      <h3>Editar oportunidade</h3>
+      <form method="post" action="{{ url_for('crm_editar_oportunidade', op_id=op.id) }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label class="field-label">Título</label>
+        <input class="field-input" type="text" name="titulo" value="{{ op.titulo }}" required>
+
+        <label class="field-label">Valor estimado (R$)</label>
+        <input class="field-input" type="number" name="valor_estimado" step="0.01" min="0" value="{{ op.valor_estimado or '' }}">
+
+        <label class="field-label">Estágio</label>
+        <select class="field-input" name="estagio">
+          {% for e in estagios %}
+          <option value="{{ e }}" {% if op.estagio == e %}selected{% endif %}>{{ e }}</option>
+          {% endfor %}
+        </select>
+
+        <label class="field-label">Responsável</label>
+        <select class="field-input" name="responsavel_id">
+          <option value="">Nenhum</option>
+          {% for u in usuarios %}
+          <option value="{{ u.id }}" {% if op.responsavel_id == u.id %}selected{% endif %}>{{ u.nome }}</option>
+          {% endfor %}
+        </select>
+
+        <button class="btn btn-primary btn-block" type="submit" style="margin-top:8px;">Salvar alterações</button>
+      </form>
+    </div>
+
+    <!-- Informações resumidas + nova interação -->
+    <div style="display:flex; flex-direction:column; gap:16px;">
+
+      <!-- Resumo -->
+      <div class="crm-detail-card">
+        <h3>Resumo</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div style="font-size:10px; color:var(--text-low); font-family:var(--font-label); margin-bottom:4px;">VALOR ESTIMADO</div>
+            {% if op.valor_estimado %}
+            <div class="crm-valor">R$ {{ '{:,.2f}'.format(op.valor_estimado).replace(',', 'X').replace('.', ',').replace('X', '.') }}</div>
+            {% else %}
+            <div style="color:var(--text-low); font-size:13px;">—</div>
+            {% endif %}
+          </div>
+          <div>
+            <div style="font-size:10px; color:var(--text-low); font-family:var(--font-label); margin-bottom:4px;">RESPONSÁVEL</div>
+            <div style="font-size:13px;">{{ op.responsavel_nome or '—' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Nova interação direta na oportunidade -->
+      <div class="crm-detail-card">
+        <h3>Registrar interação</h3>
+        <form method="post" action="{{ url_for('crm_adicionar_interacao', cliente_id=op.cliente_id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="oportunidade_id" value="{{ op.id }}">
+
+          <label class="field-label">Tipo</label>
+          <select class="field-input" name="tipo">
+            <option value="ligacao">Ligação</option>
+            <option value="reuniao">Reunião</option>
+            <option value="email">E-mail</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="outro">Outro</option>
+          </select>
+
+          <label class="field-label">Descrição</label>
+          <textarea class="field-input" name="descricao" rows="3" placeholder="O que foi discutido…" style="resize:vertical;"></textarea>
+
+          <button class="btn btn-primary btn-block" type="submit" style="margin-top:4px;">Registrar</button>
+        </form>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Histórico de interações -->
+  <div style="padding: 0 28px 32px 28px;">
+    <div class="crm-detail-card">
+      <h3>Histórico de interações ({{ interacoes|length }})</h3>
+      {% if interacoes %}
+      <ul class="crm-timeline">
+        {% for item in interacoes %}
+        <li>
+          <div class="crm-tl-icon">
+            {% if item.tipo == 'ligacao' %}&#128222;
+            {% elif item.tipo == 'reuniao' %}&#128101;
+            {% elif item.tipo == 'email' %}&#128139;
+            {% elif item.tipo == 'whatsapp' %}&#128172;
+            {% else %}&#128196;
+            {% endif %}
+          </div>
+          <div class="crm-tl-body">
+            <div style="font-size:12px; font-weight:600;">{{ item.tipo|title if item.tipo else 'Interação' }}</div>
+            {% if item.descricao %}
+            <div style="font-size:11px; color:var(--text-mid); margin-top:3px; white-space:pre-wrap;">{{ item.descricao }}</div>
+            {% endif %}
+            <div class="crm-tl-meta">{{ item.tempo }} · {{ item.usuario_nome }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p style="font-size:12px; color:var(--text-low); font-family:var(--font-label);">Nenhuma interação registrada ainda.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</body>
+</html>

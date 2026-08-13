@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Hub Servisdesk — Athos Tecnologia</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="page-header">
+    <div>
+      {% if usuario_papel == 'solicitante' %}
+      <div class="page-title">Meus <span>Chamados</span></div>
+      <div class="page-meta">Acompanhe o status dos seus tickets abertos</div>
+      {% else %}
+      <div class="page-title">Painel de <span>Chamados</span></div>
+      <div class="page-meta">Acompanhamento de tickets por status e SLA</div>
+      {% endif %}
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-novo-chamado">+ Novo chamado</button>
+    </div>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if usuario_papel == 'solicitante' %}
+  <div class="kpi-row kpi-row-4">
+    <div class="kpi-card k-total">
+      <div class="kpi-label">Total</div>
+      <div class="kpi-value">{{ kpis.total }} <small>chamados</small></div>
+    </div>
+    <div class="kpi-card k-andamento">
+      <div class="kpi-label">Em aberto</div>
+      <div class="kpi-value">{{ kpis.abertos }} <small>tickets</small></div>
+    </div>
+    <div class="kpi-card k-aguardando">
+      <div class="kpi-label">Em andamento</div>
+      <div class="kpi-value">{{ kpis.em_andamento }} <small>tickets</small></div>
+    </div>
+    <div class="kpi-card k-taxa">
+      <div class="kpi-label">Resolvidos</div>
+      <div class="kpi-value">{{ kpis.resolvidos }} <small>tickets</small></div>
+    </div>
+  </div>
+  {% else %}
+  <div class="kpi-row">
+    <div class="kpi-card k-total">
+      <div class="kpi-label">Total ativos</div>
+      <div class="kpi-value">{{ kpis.total_ativos }} <small>chamados</small></div>
+    </div>
+    <div class="kpi-card k-andamento">
+      <div class="kpi-label">Em andamento</div>
+      <div class="kpi-value">{{ kpis.em_andamento }} <small>tickets</small></div>
+    </div>
+    <div class="kpi-card k-aguardando">
+      <div class="kpi-label">Aguardando solicitante</div>
+      <div class="kpi-value">{{ kpis.aguardando_setor }} <small>tickets</small></div>
+    </div>
+    <div class="kpi-card k-atraso">
+      <div class="kpi-label">Com impedimento</div>
+      <div class="kpi-value">{{ kpis.impedido }} <small>chamados</small></div>
+    </div>
+    <div class="kpi-card k-mttr">
+      <div class="kpi-label">MTTR (30 dias)</div>
+      <div class="kpi-value">{{ kpis.mttr }} <small>horas</small></div>
+    </div>
+    <div class="kpi-card k-taxa">
+      <div class="kpi-label">SLA cumprido</div>
+      <div class="kpi-value">{{ kpis.taxa_sla }} <small>%</small></div>
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="board">
+    {% set nomes_coluna = {'aberto': 'Aberto', 'andamento': 'Em andamento', 'aguardando': 'Aguardando solicitante', 'impedido': 'Com impedimento', 'resolvido': 'Resolvido', 'cancelado': 'Cancelado'} %}
+    {% for status, titulo_coluna in nomes_coluna.items() %}
+    <div class="column col-{{ status }}" data-status="{{ status }}">
+      <div class="column-head">
+        <div class="col-title-wrap"><span class="col-dot"></span><span class="col-title">{{ titulo_coluna }}</span></div>
+        <span class="col-count">{{ colunas[status]|length + colunas_overflow[status] }}</span>
+      </div>
+      <div class="column-body" data-status="{{ status }}">
+        {% for c in colunas[status] %}
+        <div class="card" {% if usuario_papel != 'solicitante' %}draggable="true"{% endif %} data-id="{{ c.id }}">
+          <div class="card-top">
+            <span class="card-id">#{{ '%04d'|format(c.id) }}</span>
+            <span class="card-priority p-{{ c.prioridade }}">
+              {{ {'alta': 'Crítico', 'media': 'Urgente', 'baixa': 'Comum'}[c.prioridade] }}
+            </span>
+          </div>
+          <div class="card-title">{{ c.titulo }}</div>
+          {% if c.descricao %}<div class="card-desc">{{ c.descricao }}</div>{% endif %}
+          {% if c.setor_nome %}<div class="card-tags"><span class="tag">{{ c.setor_nome }}</span></div>{% endif %}
+
+          <div class="sla-bar-track {{ c.sla.classe }}">
+            <div class="sla-bar-fill" style="width:{{ c.sla.percentual }}%"></div>
+          </div>
+          <div class="sla-label {{ c.sla.classe }}">
+            <span>{{ c.sla.rotulo }}</span><span>{{ c.sla.detalhe }}</span>
+          </div>
+
+          <div class="card-footer">
+            <div class="card-assignee">
+              <div class="mini-avatar">{{ c.atribuido_iniciais }}</div>
+              <span class="card-time">{{ c.atribuido_nome or 'Não atribuído' }}</span>
+            </div>
+            <span class="card-time">{{ c.tempo_aberto }}</span>
+          </div>
+        </div>
+        {% else %}
+        <div class="column-empty">Nenhum chamado por aqui.</div>
+        {% endfor %}
+
+        {% if colunas_overflow[status] > 0 %}
+        <div class="col-overflow">+ {{ colunas_overflow[status] }} chamado{{ 's' if colunas_overflow[status] > 1 else '' }} não exibido{{ 's' if colunas_overflow[status] > 1 else '' }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Modal: novo chamado -->
+  <div class="modal-overlay" id="modal-novo">
+    <div class="modal-box">
+      <div class="modal-title">Novo chamado</div>
+      <form method="post" action="{{ url_for('criar_chamado') }}" enctype="multipart/form-data" id="form-novo-chamado">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label class="field-label">Título</label>
+        <input class="field-input" type="text" name="titulo" placeholder="Resumo do problema" required maxlength="200">
+
+        <label class="field-label">Descrição</label>
+        <textarea class="field-input" name="descricao" placeholder="Detalhes do chamado"></textarea>
+
+        <label class="field-label">Evidência <small style="color:var(--text-low); font-size:10px;">(opcional — imagem ou documento, máx. 10 MB)</small></label>
+        <div class="attach-zone" id="nc-attach-zone">
+          <input type="file" id="nc-attach-input" name="arquivo" accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;">
+          <label for="nc-attach-input" class="attach-btn">&#128206; Anexar evidência</label>
+          <span class="attach-filename" id="nc-attach-filename"></span>
+          <button type="button" class="attach-clear" id="nc-attach-clear" title="Remover" style="display:none;">&#215;</button>
+        </div>
+
+        {% if usuario_papel != 'solicitante' %}
+        <div class="field-row" style="margin-top:12px;">
+          <div>
+            <label class="field-label">Prioridade</label>
+            <select class="field-input" name="prioridade" id="select-prioridade">
+              <option value="alta">Crítico (SLA 4h)</option>
+              <option value="media" selected>Urgente (SLA 24h)</option>
+              <option value="baixa">Comum (SLA 48h)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Setor</label>
+            <select class="field-input" name="setor_id" id="select-setor">
+              <option value="">Sem setor</option>
+              {% for s in setores %}
+              <option value="{{ s.id }}">{{ s.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div id="scan-equipment-section" style="display:none; margin-top:14px;">
+
+          <!-- IP do Equipamento -->
+          <label class="field-label">IP do Equipamento <small style="color:var(--text-low);font-size:10px;">(diagnóstico automático)</small></label>
+          <div class="scan-ip-row">
+            <input class="field-input" type="text" id="input-ip-equipamento"
+                   name="ip_equipamento" placeholder="Ex: 192.168.1.100"
+                   autocomplete="off" spellcheck="false" style="flex:1;">
+            <button type="button" id="btn-scan-ip" class="btn btn-ghost scan-ip-btn">&#128269; Escanear</button>
+          </div>
+
+          <!-- Painel de diagnóstico animado -->
+          <div id="scan-diagnostico" class="scan-diag-panel" style="display:none;">
+            <div class="scan-diag-header">
+              <span class="scan-diag-title">DIAGNÓSTICO DO DISPOSITIVO</span>
+              <span class="scan-diag-pulse" id="scan-pulse"></span>
+            </div>
+            <div class="scan-checks">
+              <div class="scan-check-item" id="chk-conectividade">
+                <div class="check-icon pending">&#9675;</div>
+                <div class="check-info">
+                  <div class="check-name">Conectividade</div>
+                  <div class="check-detail">Aguardando endereço IP...</div>
+                </div>
+              </div>
+              <div class="scan-check-item" id="chk-hardware">
+                <div class="check-icon pending">&#9675;</div>
+                <div class="check-info">
+                  <div class="check-name">Hardware</div>
+                  <div class="check-detail">Aguardando...</div>
+                </div>
+              </div>
+              <div class="scan-check-item" id="chk-display">
+                <div class="check-icon pending">&#9675;</div>
+                <div class="check-info">
+                  <div class="check-name">Display / Tela</div>
+                  <div class="check-detail">Aguardando...</div>
+                </div>
+              </div>
+              <div class="scan-check-item" id="chk-impressora">
+                <div class="check-icon pending">&#9675;</div>
+                <div class="check-info">
+                  <div class="check-name">Impressora</div>
+                  <div class="check-detail">Aguardando...</div>
+                </div>
+              </div>
+            </div>
+            <div id="scan-diag-resumo" class="scan-diag-resumo"></div>
+          </div>
+
+          {% if equipamentos %}
+          <!-- Equipamento cadastrado (opcional — preenche IP automaticamente) -->
+          <div id="scan-equip-dropdown" style="margin-top:10px; display:none;">
+            <label class="field-label">Vincular equipamento cadastrado <small style="color:var(--text-low);font-size:10px;">(opcional)</small></label>
+            <select class="field-input" name="equipamento_id" id="select-equipamento">
+              <option value="">Nenhum</option>
+              {% for eq in equipamentos %}
+              <option value="{{ eq.id }}" data-ip="{{ eq.ip or '' }}">{{ eq.nome }}{% if eq.ip %} — {{ eq.ip }}{% endif %}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
+          <input type="hidden" name="scan_result_id" id="scan-result-id">
+          <div id="scan-status" style="display:none;"><div id="scan-loading" style="display:none;"></div><div id="scan-result"></div></div>
+        </div>
+        {% endif %}
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" style="flex:1" id="btn-cancelar-novo">Cancelar</button>
+          <button type="submit" class="btn btn-primary" style="flex:1">Criar chamado</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    window.USUARIO_PAPEL = "{{ usuario_papel }}";
+
+    // Anexo no modal novo chamado
+    const ncInput = document.getElementById("nc-attach-input");
+    const ncName  = document.getElementById("nc-attach-filename");
+    const ncClear = document.getElementById("nc-attach-clear");
+
+    ncInput?.addEventListener("change", () => {
+      const f = ncInput.files[0];
+      if (!f) return;
+      if (f.size > 10 * 1024 * 1024) {
+        alert("Arquivo muito grande. O limite é 10 MB.");
+        ncInput.value = "";
+        return;
+      }
+      ncName.textContent = f.name;
+      ncClear.style.display = "inline-flex";
+    });
+
+    ncClear?.addEventListener("click", () => {
+      ncInput.value = "";
+      ncName.textContent = "";
+      ncClear.style.display = "none";
+    });
+
+    // ── Scan de equipamento ──────────────────────────────────────────────────
+    const SETOR_HW_ID      = "{{ setor_hardware_id }}";
+    const SETOR_INF_ID     = "{{ setor_infra_id }}";
+    const SETORES_TECNICOS = new Set([SETOR_HW_ID, SETOR_INF_ID].filter(Boolean));
+
+    const selectSetor   = document.getElementById("select-setor");
+    const selectEquip   = document.getElementById("select-equipamento");
+    const scanSection   = document.getElementById("scan-equipment-section");
+    const scanResultId  = document.getElementById("scan-result-id");
+    const selectPrio    = document.getElementById("select-prioridade");
+    const ipInput       = document.getElementById("input-ip-equipamento");
+    const btnScanIp     = document.getElementById("btn-scan-ip");
+    const diagPanel     = document.getElementById("scan-diagnostico");
+    const diagResumo    = document.getElementById("scan-diag-resumo");
+    const scanPulse     = document.getElementById("scan-pulse");
+    const equipDropdown = document.getElementById("scan-equip-dropdown");
+
+    function resetScan() {
+      if (diagPanel)    diagPanel.style.display    = "none";
+      if (diagResumo)   diagResumo.innerHTML        = "";
+      if (scanResultId) scanResultId.value          = "";
+      if (selectEquip)  selectEquip.value           = "";
+      if (ipInput)      ipInput.value               = "";
+      if (scanPulse)    scanPulse.style.display     = "none";
+      resetCheckItems();
+    }
+
+    function resetCheckItems() {
+      ["conectividade","hardware","display","impressora"].forEach(n => {
+        setCheckState(n, "pending", "Aguardando...");
+      });
+    }
+
+    function setCheckState(name, state, detail) {
+      const item = document.getElementById("chk-" + name);
+      if (!item) return;
+      item.className = "scan-check-item " + state;
+      const iconEl   = item.querySelector(".check-icon");
+      const detailEl = item.querySelector(".check-detail");
+      const icons = { pending:"○", checking:"", ok:"✓", warn:"⚠", error:"✕" };
+      if (iconEl)   { iconEl.className = "check-icon " + state; iconEl.textContent = icons[state] ?? "○"; }
+      if (detailEl) detailEl.textContent = detail;
+    }
+
+    function statusToState(s) {
+      if (["ok","online"].includes(s))             return "ok";
+      if (["offline","timeout","erro"].includes(s)) return "error";
+      return "warn";
+    }
+
+    function statusToLabel(check, status, payload) {
+      const map = {
+        conectividade: { ok: "Conectado" + (payload?.latencia_ms ? " — " + payload.latencia_ms + "ms" : ""), offline:"Dispositivo inacessível", timeout:"Sem resposta (timeout)", erro:"Erro de conexão" },
+        hardware:      { ok: "OK" + (payload?.modelo ? " — " + payload.modelo : ""), erro:"Falha detectada", offline:"Não respondeu", timeout:"Timeout" },
+        display:       { ok:"Display funcionando", travado:"Display travado", sem_sinal:"Sem sinal de vídeo", erro:"Erro no display", offline:"Sem resposta", timeout:"Timeout" },
+        impressora:    { online:"Online e operacional", sem_papel:"Sem papel", sem_toner:"Sem toner", fila_travada:"Fila travada", erro:"Erro na impressora", offline:"Sem resposta", timeout:"Timeout" },
+      };
+      return map[check]?.[status] ?? status.replace(/_/g," ");
+    }
+
+    async function iniciarScanPorIP(ip) {
+      if (!ip) return;
+      if (diagPanel)  { diagPanel.style.display = "block"; }
+      if (diagResumo) diagResumo.innerHTML = "";
+      if (scanPulse)  scanPulse.style.display = "inline-block";
+      if (scanResultId) scanResultId.value = "";
+
+      const checks = ["conectividade","hardware","display","impressora"];
+      checks.forEach(n => setCheckState(n, "pending", "Aguardando..."));
+      checks.forEach((n,i) => setTimeout(() => setCheckState(n, "checking", "Verificando..."), i * 130));
+
+      const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
+      try {
+        const resp = await fetch("/api/scan/ip", {
+          method: "POST",
+          headers: { "Content-Type":"application/json", "X-CSRFToken": csrf },
+          body: JSON.stringify({ ip }),
+        });
+        const data = await resp.json();
+
+        if (data.erro) {
+          if (scanPulse) scanPulse.style.display = "none";
+          checks.forEach(n => setCheckState(n, "error", data.erro));
+          return;
+        }
+
+        const det = data.detalhes || {};
+        const checkMap = { conectividade: det.conectividade, hardware: det.hardware, display: det.display, impressora: det.impressora };
+
+        checks.forEach((name, i) => {
+          setTimeout(() => {
+            const info   = checkMap[name] || {};
+            const status = info.status || "offline";
+            setCheckState(name, statusToState(status), statusToLabel(name, status, info.payload));
+          }, 450 + i * 260);
+        });
+
+        setTimeout(() => {
+          if (scanPulse) scanPulse.style.display = "none";
+          if (data.sugestao?.prioridade && selectPrio) selectPrio.value = data.sugestao.prioridade;
+          if (scanResultId) scanResultId.value = data.scan_id || "";
+          if (diagResumo) {
+            const cor  = data.sucesso ? "var(--amber)" : "var(--warn)";
+            const icon = data.sucesso ? "✓" : "⚠";
+            diagResumo.innerHTML =
+              "<div class='scan-resumo-line' style='color:" + cor + "'>" + icon + " " + (data.resumo || "") +
+              (data.sugestao?.nota ? "<br><small class='scan-resumo-nota'>" + data.sugestao.nota + "</small>" : "") +
+              "</div>";
+          }
+        }, 450 + checks.length * 260 + 100);
+
+      } catch (_) {
+        if (scanPulse) scanPulse.style.display = "none";
+        checks.forEach(n => setCheckState(n, "error", "Serviço de diagnóstico inacessível"));
+      }
+    }
+
+    if (selectSetor && SETORES_TECNICOS.size) {
+      selectSetor.addEventListener("change", function () {
+        const isTecnico = SETORES_TECNICOS.has(this.value);
+        const isHw      = this.value === SETOR_HW_ID;
+        if (scanSection)   scanSection.style.display   = isTecnico ? "block" : "none";
+        if (equipDropdown) equipDropdown.style.display = isHw      ? "block" : "none";
+        if (!isTecnico) resetScan();
+      });
+    }
+
+    if (btnScanIp) {
+      btnScanIp.addEventListener("click", () => {
+        const ip = ipInput?.value.trim();
+        if (ip) iniciarScanPorIP(ip);
+      });
+    }
+
+    if (ipInput) {
+      ipInput.addEventListener("keydown", e => {
+        if (e.key === "Enter") { e.preventDefault(); iniciarScanPorIP(ipInput.value.trim()); }
+      });
+    }
+
+    if (selectEquip) {
+      selectEquip.addEventListener("change", function () {
+        const ip = this.options[this.selectedIndex]?.dataset?.ip || "";
+        if (ip && ipInput) { ipInput.value = ip; iniciarScanPorIP(ip); }
+      });
+    }
+
+    document.getElementById("btn-cancelar-novo")?.addEventListener("click", resetScan);
+  </script>
+  <script src="{{ url_for('static', filename='js/board.js') }}"></script>
+</body>
+</html>

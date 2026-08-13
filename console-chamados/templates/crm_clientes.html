@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="csrf-token" content="{{ csrf_token() }}">
+<title>Clientes CRM — Hub Servisdesk</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger-btn" id="sidebar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="brand">
+        <div class="brand-mark">A</div>
+        <div>
+          <div class="brand-text">Hub Servisdesk</div>
+          <div class="brand-sub">Athos Tecnologia · Uso interno</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="icon-btn" href="{{ url_for('logout') }}" title="Sair">&#9211;</a>
+      <div class="user-chip">
+        <div class="avatar">{{ usuario_iniciais }}</div>
+        <div>
+          <div class="user-name">{{ usuario_nome }}</div>
+          <div class="user-role">{{ usuario_papel }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-head">
+      <span class="sidebar-title">NAVEGAÇÃO</span>
+      <button class="sidebar-close" id="sidebar-close">&#10005;</button>
+    </div>
+    <nav class="sidebar-nav">
+      <a class="sidebar-item" href="{{ url_for('board') }}">
+        <span class="sidebar-icon">&#9635;</span><span>Board de Chamados</span>
+      </a>
+      {% if usuario_papel != 'solicitante' %}
+      <a class="sidebar-item" href="{{ url_for('listar_incidentes') }}">
+        <span class="sidebar-icon">&#128680;</span><span>Incidentes</span>
+      </a>
+      <div class="sidebar-section-label">CRM</div>
+      <a class="sidebar-item" href="{{ url_for('crm_clientes') }}">
+        <span class="sidebar-icon">&#128100;</span><span>Clientes</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('crm_funil') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Funil de Oportunidades</span>
+      </a>
+      <div class="sidebar-section-label">RELATÓRIOS</div>
+      <a class="sidebar-item" href="{{ url_for('relatorios') }}">
+        <span class="sidebar-icon">&#128202;</span><span>Relatórios</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('exportar_csv') }}">
+        <span class="sidebar-icon">&#8595;</span><span>Exportar CSV</span>
+      </a>
+      {% endif %}
+      {% if usuario_papel == 'admin' %}
+      <div class="sidebar-section-label">ADMINISTRAÇÃO</div>
+      <a class="sidebar-item" href="{{ url_for('listar_equipamentos') }}">
+        <span class="sidebar-icon">&#128421;</span><span>Equipamentos</span>
+      </a>
+      <a class="sidebar-item" href="{{ url_for('listar_usuarios') }}">
+        <span class="sidebar-icon">&#128101;</span><span>Usuários</span>
+        {% if pendentes_count > 0 %}<span class="sidebar-badge">{{ pendentes_count }}</span>{% endif %}
+      </a>
+      {% endif %}
+    </nav>
+  </aside>
+  <script src="{{ url_for('static', filename='js/sidebar.js') }}"></script>
+
+  <div class="page-header">
+    <div>
+      <div class="page-title">Clientes <span>CRM</span></div>
+      <div class="page-meta">Cadastro de clientes e oportunidades comerciais</div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" id="btn-novo-cliente">+ Novo cliente</button>
+    </div>
+  </div>
+
+  {% with msgs = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in msgs %}
+    <div class="flash-msg flash-{{ cat }}" style="margin: 8px 28px 0;">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <!-- Search -->
+  <div style="padding: 16px 28px 0 28px;">
+    <form method="get" action="{{ url_for('crm_clientes') }}" style="display:flex; gap:10px; max-width:480px;">
+      <input class="field-input" style="margin:0; flex:1;" type="text" name="q" value="{{ q }}" placeholder="Buscar por nome ou empresa…">
+      <button class="btn btn-ghost" type="submit">Buscar</button>
+      {% if q %}
+      <a class="btn btn-ghost" href="{{ url_for('crm_clientes') }}">Limpar</a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Tabela de clientes -->
+  <div style="padding: 16px 28px 32px 28px; overflow-x:auto;">
+    {% if clientes %}
+    <table class="incident-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Empresa</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Oportunidades ativas</th>
+          <th>Chamados</th>
+          <th>Cadastrado em</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cl in clientes %}
+        <tr class="crm-row" onclick="window.location.href='{{ url_for('crm_cliente_detalhe', cliente_id=cl.id) }}'" style="cursor:pointer;">
+          <td><strong>{{ cl.nome }}</strong></td>
+          <td>{{ cl.empresa or '—' }}</td>
+          <td>{{ cl.telefone or '—' }}</td>
+          <td>{{ cl.email or '—' }}</td>
+          <td>
+            {% if cl.total_oportunidades > 0 %}
+            <span class="badge" style="background:rgba(0,255,136,0.12);color:var(--amber);">{{ cl.total_oportunidades }}</span>
+            {% else %}
+            <span style="color:var(--text-low);">—</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if cl.total_chamados > 0 %}
+            <span class="badge" style="background:rgba(0,212,255,0.12);color:var(--accent-cyan);">{{ cl.total_chamados }}</span>
+            {% else %}
+            <span style="color:var(--text-low);">—</span>
+            {% endif %}
+          </td>
+          <td style="color:var(--text-low); font-size:11px;">{{ cl.criado_em[:10] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="text-align:center; padding:48px; color:var(--text-low); font-family:var(--font-label); font-size:12px; letter-spacing:0.06em;">
+      {% if q %}Nenhum cliente encontrado para "{{ q }}"{% else %}Nenhum cliente cadastrado ainda{% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Modal novo cliente -->
+  <div class="modal-overlay" id="modal-novo-cliente">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title">Novo Cliente</div>
+        <button class="icon-btn" id="btn-cancelar-cliente" type="button">&#10005;</button>
+      </div>
+      <form method="post" action="{{ url_for('crm_criar_cliente') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="modal-body">
+          <label class="field-label">Nome *</label>
+          <input class="field-input" type="text" name="nome" required placeholder="Nome do contato">
+
+          <label class="field-label">Empresa</label>
+          <input class="field-input" type="text" name="empresa" placeholder="Razão social ou nome fantasia">
+
+          <label class="field-label">Telefone</label>
+          <input class="field-input" type="text" name="telefone" placeholder="(11) 99999-9999">
+
+          <label class="field-label">E-mail</label>
+          <input class="field-input" type="email" name="email" placeholder="contato@empresa.com">
+
+          <label class="field-label">Origem</label>
+          <select class="field-input" name="origem">
+            <option value="">Selecione…</option>
+            <option value="indicacao">Indicação</option>
+            <option value="site">Site</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="evento">Evento</option>
+            <option value="cold_outreach">Cold outreach</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-ghost" type="button" id="btn-cancelar-cliente2">Cancelar</button>
+          <button class="btn btn-primary" type="submit">Criar cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+const modalCliente = document.getElementById('modal-novo-cliente');
+document.getElementById('btn-novo-cliente').addEventListener('click', () => modalCliente.classList.add('open'));
+document.getElementById('btn-cancelar-cliente').addEventListener('click', () => modalCliente.classList.remove('open'));
+document.getElementById('btn-cancelar-cliente2').addEventListener('click', () => modalCliente.classList.remove('open'));
+modalCliente.addEventListener('click', e => { if (e.target === modalCliente) modalCliente.classList.remove('open'); });
+</script>
+
+</body>
+</html>
