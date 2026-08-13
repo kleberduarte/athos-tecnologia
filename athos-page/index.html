@@ -65,7 +65,60 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
+
+  <!-- Robot widget + modal (inline para garantir deploy independente de cache) -->
+  <style>
+.robot-widget{position:fixed!important;bottom:8rem;right:1.5rem;z-index:9100!important;display:flex;flex-direction:column;align-items:center}
+.robot-toggle{position:relative;width:72px;height:72px;border-radius:50%;background:var(--card);border:2px solid var(--accent);box-shadow:var(--glow);cursor:pointer;outline:none;display:flex;align-items:center;justify-content:center;animation:robotFloat 3s ease-in-out infinite;transition:box-shadow .3s var(--ease);flex-shrink:0}
+.robot-toggle:hover{box-shadow:var(--glow-lg)}
+.robot-antenna{position:absolute;top:-15px;width:3px;height:12px;background:var(--accent);border-radius:2px;box-shadow:var(--glow-sm)}
+.robot-antenna::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:var(--glow);animation:antennaPulse 2s ease-in-out infinite}
+.robot-antenna--l{left:16px;transform:rotate(-14deg)}.robot-antenna--r{right:16px;transform:rotate(14deg)}
+.robot-face{display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.robot-eyes{display:flex;gap:10px}
+.robot-eye{width:12px;height:10px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm);animation:robotBlink 4s ease-in-out infinite}
+.robot-eye:nth-child(2){animation-delay:.08s}
+.robot-mouth{width:26px;height:3px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm)}
+.robot-bubble{position:absolute;bottom:calc(100% + .85rem);right:0;width:210px;background:var(--card);border:1px solid var(--accent);border-radius:12px 12px 4px 12px;padding:1.1rem 1rem 1rem;box-shadow:var(--glow),0 8px 32px rgba(0,0,0,.6);opacity:0;transform:translateY(10px) scale(.94);transform-origin:bottom right;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.robot-bubble.is-open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
+.robot-bubble__close{position:absolute;top:.35rem;right:.5rem;background:transparent;border:none;color:var(--muted-fg);font-size:1.1rem;line-height:1;cursor:pointer;padding:0;transition:color .2s}
+.robot-bubble__close:hover{color:var(--accent)}
+.robot-bubble__text{font-family:var(--font-brand);font-size:.78rem;color:var(--foreground);line-height:1.6;text-align:center;margin:0 0 .9rem;letter-spacing:.03em}
+.robot-bubble__text strong{color:var(--accent)}
+.robot-bubble__btn{display:block;text-align:center;background:transparent;border:1px solid var(--accent);color:var(--accent);font-family:var(--font-label);font-size:.72rem;padding:.55rem 1rem;border-radius:6px;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;transition:background .2s,box-shadow .2s,color .2s}
+.robot-bubble__btn:hover{background:var(--accent);color:var(--background);box-shadow:var(--glow)}
+@keyframes robotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes robotBlink{0%,88%,100%{transform:scaleY(1)}93%{transform:scaleY(.06)}}
+@keyframes antennaPulse{0%,100%{opacity:1}50%{opacity:.3}}
+.rmodal-overlay{position:fixed!important;inset:0;z-index:9500!important;background:rgba(10,10,15,.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s var(--ease),visibility .35s}
+.rmodal-overlay.is-open{opacity:1;visibility:visible;pointer-events:all}
+.rmodal-box{position:relative;background:var(--card);border:1px solid var(--accent);box-shadow:var(--glow-lg),0 24px 64px rgba(0,0,0,.8);clip-path:polygon(0 var(--chamfer),var(--chamfer) 0,calc(100% - var(--chamfer)) 0,100% var(--chamfer),100% calc(100% - var(--chamfer)),calc(100% - var(--chamfer)) 100%,var(--chamfer) 100%,0 calc(100% - var(--chamfer)));padding:2.5rem 2rem 2rem;max-width:420px;width:100%;text-align:center;transform:translateY(20px) scale(.95);transition:transform .35s var(--ease)}
+.rmodal-overlay.is-open .rmodal-box{transform:translateY(0) scale(1)}
+.rmodal-accent{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-cyan),transparent);opacity:.8}
+.rmodal-close{position:absolute;top:.75rem;right:.9rem;background:transparent;border:none;color:var(--muted-fg);font-size:1.3rem;line-height:1;cursor:pointer;padding:.2rem .4rem;transition:color .2s}
+.rmodal-close:hover{color:var(--accent)}
+.rmodal-robot{position:relative;width:84px;height:84px;border-radius:50%;background:var(--muted);border:2px solid var(--accent);box-shadow:var(--glow);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;animation:robotFloat 3s ease-in-out infinite}
+.rmodal-robot__antenna{position:absolute;top:-16px;width:3px;height:13px;background:var(--accent);border-radius:2px;box-shadow:var(--glow-sm)}
+.rmodal-robot__antenna::after{content:'';position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:var(--glow);animation:antennaPulse 2s ease-in-out infinite}
+.rmodal-robot__antenna--l{left:19px;transform:rotate(-14deg)}.rmodal-robot__antenna--r{right:19px;transform:rotate(14deg)}
+.rmodal-robot__face{display:flex;flex-direction:column;align-items:center;gap:9px;pointer-events:none}
+.rmodal-robot__eyes{display:flex;gap:11px}
+.rmodal-robot__eye{width:14px;height:11px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm);animation:robotBlink 4s ease-in-out infinite}
+.rmodal-robot__eye:nth-child(2){animation-delay:.08s}
+.rmodal-robot__mouth{width:30px;height:3px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm)}
+.rmodal-label{font-family:var(--font-label);font-size:.62rem;color:var(--accent);letter-spacing:.22em;margin:0 0 .5rem}
+.rmodal-title{font-family:var(--font-brand);font-size:clamp(1.5rem,5vw,1.9rem);font-weight:900;color:var(--foreground);letter-spacing:.08em;line-height:1.15;margin:0 0 1.25rem;animation:glitch 8s ease-in-out infinite}
+.rmodal-title span{color:var(--accent);text-shadow:var(--glow-sm)}
+.rmodal-text{font-family:var(--font);font-size:.83rem;color:var(--muted-fg);line-height:1.8;margin:0 0 1.5rem}
+.rmodal-progress{height:4px;background:var(--muted);border-radius:2px;overflow:hidden;margin-bottom:.6rem}
+.rmodal-progress__bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-cyan));box-shadow:0 0 8px rgba(0,255,136,.5);border-radius:2px;animation:progressPulse 2.8s ease-in-out infinite}
+.rmodal-eta{font-family:var(--font-label);font-size:.6rem;color:var(--muted-fg);letter-spacing:.1em;margin:0 0 1.75rem;text-transform:uppercase}
+.rmodal-eta strong{color:var(--accent-cyan)}
+.rmodal-cta{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.75rem;background:var(--accent);color:var(--background);font-family:var(--font-label);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 var(--chamfer-sm),var(--chamfer-sm) 0,calc(100% - var(--chamfer-sm)) 0,100% var(--chamfer-sm),100% calc(100% - var(--chamfer-sm)),calc(100% - var(--chamfer-sm)) 100%,var(--chamfer-sm) 100%,0 calc(100% - var(--chamfer-sm)));transition:filter .2s,box-shadow .2s}
+.rmodal-cta:hover{filter:brightness(1.1);box-shadow:var(--glow);color:var(--background)}
+@keyframes progressPulse{0%,100%{width:62%}50%{width:74%}}
+  </style>
 
   <!-- Google Analytics 4 — substitua G-XXXXXXXXXX pelo seu Measurement ID -->
   <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
@@ -77,9 +130,7 @@
   </script> -->
 </head>
 <body>
-
-  <!-- Skip Navigation (acessibilidade — WCAG 2.4.1) -->
-  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+  <a class="skip-link" href="#inicio">Pular para o conteúdo</a>
 
   <!-- Logo background -->
   <div class="athos-logo-bg" aria-hidden="true"></div>
@@ -87,7 +138,7 @@
   <header class="athos-header" id="siteHeader">
     <div class="athos-header__bar">
       <a href="#inicio" class="athos-logo-link" aria-label="Athos Tecnologia — início">
-        <img src="logo-athos.png" alt="Athos Tecnologia" width="180" height="36" />
+        ATHOS
       </a>
       <button type="button" class="athos-nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -98,25 +149,18 @@
           <li><a href="#automacao">Automação</a></li>
           <li><a href="#sobre">Sobre</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
-          <li><a href="produtos.html">Produtos</a></li>
           <li><a href="#contato">Contato</a></li>
-          <li class="d-lg-none pt-2">
-            <a class="athos-header__cta athos-header__cta--block" href="#contato">Fale conosco</a>
-          </li>
-          <li class="d-lg-none pt-1">
-            <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta athos-header__cta--block">Console Chamados</a>
-          </li>
         </ul>
       </nav>
-      <a href="http://localhost:5000" target="_blank" rel="noopener noreferrer" class="athos-header__cta d-none d-lg-inline-flex">Console Chamados</a>
-      <a class="athos-header__cta" href="#contato">Fale conosco</a>
+      <a class="athos-header__cta d-none d-lg-inline-flex" href="#contato">Fale conosco</a>
     </div>
   </header>
+  <div id="navOverlay"></div>
 
   <main id="main-content">
 
     <!-- Hero -->
-    <section class="athos-hero" id="inicio">
+    <section class="athos-hero" id="inicio" tabindex="-1">
       <canvas class="athos-hero__grid" id="heroGrid" aria-hidden="true"></canvas>
 
       <!-- Decoração circular direita -->
@@ -592,6 +636,7 @@
                       id="cf-email"
                       name="email"
                       required
+                      maxlength="254"
                       placeholder="voce@empresa.com"
                       autocomplete="email"
                       aria-required="true"
@@ -666,9 +711,6 @@
               <p>Ocorreu um problema ao enviar. Tente novamente ou entre em contato direto: <a href="mailto:contato@athostecnologia.com.br">contato@athostecnologia.com.br</a></p>
             </div>
 
-            <p class="text-center mt-5">
-              <a href="../../index.html" class="athos-back-link">← Voltar ao Grupo DOC Partners</a>
-            </p>
           </div>
         </div>
       </div>
@@ -676,31 +718,128 @@
 
   </main>
 
-  <!-- Botão flutuante -->
-  <div class="athos-float" id="floatBar" aria-hidden="true">
-    <a href="#contato" class="athos-float__cta">Solicitar proposta</a>
-    <button class="athos-float__top" id="backToTop" aria-label="Voltar ao topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">
-      <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path d="M10 15V5M5 10l5-5 5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+  <!-- Botão WhatsApp flutuante -->
+  <button
+    id="whatsappBtn"
+    type="button"
+    aria-label="Fale conosco pelo WhatsApp"
+    class="athos-whatsapp-btn"
+  >
+    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    <span class="athos-whatsapp-btn__tooltip">Fale pelo WhatsApp</span>
+  </button>
+
+  <!-- Modal WhatsApp -->
+  <div id="whatsappModal" class="wa-modal" role="dialog" aria-modal="true" aria-label="WhatsApp Athos Tecnologia" hidden>
+    <div class="wa-modal__box">
+      <div class="wa-modal__header">
+        <div class="wa-modal__avatar">AT</div>
+        <div class="wa-modal__info">
+          <p class="wa-modal__name">Athos Tecnologia</p>
+          <p class="wa-modal__status">● Online</p>
+        </div>
+        <button class="wa-modal__close" id="whatsappModalClose" aria-label="Fechar">✕</button>
+      </div>
+      <div class="wa-modal__body">
+        <div class="wa-modal__bubble">
+          <p>Olá! 👋</p>
+          <p>Seja bem-vindo à <strong>Athos Tecnologia</strong>.</p>
+          <p>Como podemos te ajudar hoje?</p>
+          <span class="wa-modal__time">agora</span>
+        </div>
+      </div>
+      <div class="wa-modal__footer">
+        <p class="wa-modal__coming">Em breve disponível — use o formulário de contato abaixo.</p>
+        <a class="wa-modal__cta" href="#contato">Ir para o formulário</a>
+      </div>
+    </div>
+  </div>
+  <div id="whatsappBackdrop" class="wa-backdrop" hidden></div>
+
+
+  <!-- Robot Support Widget -->
+  <div id="robotWidget" class="robot-widget">
+    <div class="robot-bubble" id="robotBubble">
+      <button class="robot-bubble__close" id="robotClose" aria-label="Fechar">×</button>
+      <p class="robot-bubble__text">Como posso<br><strong>te ajudar?</strong></p>
+      <button class="robot-bubble__btn" id="robotChamadoBtn">
+        Abrir um chamado
+      </button>
+    </div>
+    <button class="robot-toggle" id="robotToggle" aria-label="Abrir suporte Athos">
+      <span class="robot-antenna robot-antenna--l"></span>
+      <span class="robot-antenna robot-antenna--r"></span>
+      <span class="robot-face">
+        <span class="robot-eyes">
+          <span class="robot-eye"></span>
+          <span class="robot-eye"></span>
+        </span>
+        <span class="robot-mouth"></span>
+      </span>
     </button>
   </div>
 
-  <footer class="athos-footer">
-    <div class="container-athos">
-      <div class="row gy-3 align-items-center">
-        <div class="col-lg-8">
-          <p class="athos-footer__brand">ATHOS TECNOLOGIA</p>
-          <p class="athos-footer__legal">© <span id="y"></span> Athos Tecnologia — Empresa do Grupo DOC Partners. Todos os direitos reservados.</p>
-        </div>
-        <div class="col-lg-4 text-lg-end">
-          <p class="athos-footer__note">Parte do ecossistema <a href="../index.html">DOC Partners</a></p>
-        </div>
+  <!-- Modal Em Construção -->
+  <div id="robotModal" class="rmodal-overlay" role="dialog" aria-modal="true" aria-labelledby="rmodalTitle">
+    <div class="rmodal-box">
+      <div class="rmodal-accent"></div>
+      <button class="rmodal-close" id="robotModalClose" aria-label="Fechar">×</button>
+
+      <div class="rmodal-robot" aria-hidden="true">
+        <span class="rmodal-robot__antenna rmodal-robot__antenna--l"></span>
+        <span class="rmodal-robot__antenna rmodal-robot__antenna--r"></span>
+        <span class="rmodal-robot__face">
+          <span class="rmodal-robot__eyes">
+            <span class="rmodal-robot__eye"></span>
+            <span class="rmodal-robot__eye"></span>
+          </span>
+          <span class="rmodal-robot__mouth"></span>
+        </span>
       </div>
+
+      <p class="rmodal-label">// STATUS DO SISTEMA</p>
+      <h2 class="rmodal-title" id="rmodalTitle">EM<br><span>CONSTRUÇÃO</span></h2>
+      <p class="rmodal-text">
+        Estamos desenvolvendo o console de chamados para que você possa abrir e acompanhar seus atendimentos diretamente por aqui.<br><br>
+        Em breve nosso suporte estará totalmente disponível online.
+      </p>
+
+      <div class="rmodal-progress" aria-hidden="true">
+        <div class="rmodal-progress__bar"></div>
+      </div>
+      <p class="rmodal-eta">desenvolvimento em andamento — <strong>lançamento em breve</strong></p>
+
+      <a href="#contato" class="rmodal-cta" id="robotModalCta">Falar com a equipe agora</a>
+    </div>
+  </div>
+
+  <footer class="athos-footer">
+    <div class="container-athos text-center">
+      <p class="athos-footer__brand">ATHOS TECNOLOGIA</p>
+      <p class="athos-footer__legal">© <span id="y"></span> Athos Tecnologia — Empresa do Grupo DOC Partners. Todos os direitos reservados.</p>
+      <p class="athos-footer__note mt-2">Parte do ecossistema DOC Partners</p>
     </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="main.js"></script>
+  <script>
+(function(){
+  var toggle=document.getElementById('robotToggle'),bubble=document.getElementById('robotBubble'),bClose=document.getElementById('robotClose'),chamado=document.getElementById('robotChamadoBtn'),modal=document.getElementById('robotModal'),mClose=document.getElementById('robotModalClose'),mCta=document.getElementById('robotModalCta');
+  if(!toggle||!bubble||!modal)return;
+  function openModal(){bubble.classList.remove('is-open');modal.classList.add('is-open');mClose.focus();}
+  function closeModal(){modal.classList.remove('is-open');}
+  setTimeout(function(){bubble.classList.add('is-open');},2500);
+  toggle.addEventListener('click',function(){bubble.classList.toggle('is-open');});
+  bClose.addEventListener('click',function(e){e.stopPropagation();bubble.classList.remove('is-open');});
+  chamado.addEventListener('click',openModal);
+  mClose.addEventListener('click',closeModal);
+  modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+  mCta.addEventListener('click',closeModal);
+})();
+  </script>
 </body>
 </html>

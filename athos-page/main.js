@@ -5,16 +5,42 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 // ——— Nav mobile ———
-const toggle = document.getElementById('navToggle');
-const nav    = document.getElementById('mainNav');
+const toggle  = document.getElementById('navToggle');
+const nav     = document.getElementById('mainNav');
+const overlay = document.getElementById('navOverlay');
+
+function closeNav() {
+  nav.classList.remove('is-open');
+  overlay.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
+}
+
 toggle.addEventListener('click', () => {
   const open = nav.classList.toggle('is-open');
+  overlay.classList.toggle('is-open', open);
   toggle.setAttribute('aria-expanded', open);
 });
+
+overlay.addEventListener('click', closeNav);
+
 nav.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', () => {
-    nav.classList.remove('is-open');
-    toggle.setAttribute('aria-expanded', 'false');
+  a.addEventListener('click', (e) => {
+    const href = a.getAttribute('href');
+    if (!href || !href.startsWith('#')) { closeNav(); return; }
+    e.preventDefault();
+    closeNav();
+    setTimeout(() => {
+      const target = document.getElementById(href.slice(1));
+      if (!target) return;
+      target.classList.add('is-visible');
+      let top = 0;
+      let node = target;
+      while (node && node !== document.body) {
+        top += node.offsetTop || 0;
+        node = node.offsetParent;
+      }
+      window.scrollTo(0, Math.max(0, top - 84));
+    }, 100);
   });
 });
 
@@ -26,7 +52,7 @@ const observer = new IntersectionObserver(entries => {
       observer.unobserve(e.target);
     }
   });
-}, { threshold: 0.12 });
+}, { threshold: 0.05 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
 // ——— Ano footer ———
@@ -132,24 +158,32 @@ if (y) y.textContent = new Date().getFullYear();
   counters.forEach(el => counterObserver.observe(el));
 })();
 
-// ——— Botão flutuante de CTA ———
+// ——— WhatsApp modal ———
 (function () {
-  const floatBar  = document.getElementById('floatBar');
-  if (!floatBar) return;
+  const btn      = document.getElementById('whatsappBtn');
+  const modal    = document.getElementById('whatsappModal');
+  const backdrop = document.getElementById('whatsappBackdrop');
+  const closeBtn = document.getElementById('whatsappModalClose');
+  if (!btn || !modal) return;
 
-  let visible = false;
-
-  function updateFloat() {
-    const shouldShow = window.scrollY > 400;
-    if (shouldShow !== visible) {
-      visible = shouldShow;
-      floatBar.classList.toggle('is-visible', visible);
-      floatBar.setAttribute('aria-hidden', String(!visible));
-    }
+  function openModal() {
+    modal.hidden    = false;
+    backdrop.hidden = false;
+    closeBtn.focus();
+  }
+  function closeModal() {
+    modal.hidden    = true;
+    backdrop.hidden = true;
+    btn.focus();
   }
 
-  window.addEventListener('scroll', updateFloat, { passive: true });
-  updateFloat();
+  btn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+  const cta = modal.querySelector('.wa-modal__cta');
+  if (cta) cta.addEventListener('click', closeModal);
 })();
 
 // ——— Formulário de contato (Formspree AJAX) ———
@@ -182,8 +216,9 @@ if (y) y.textContent = new Date().getFullYear();
   }
 
   form.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('blur', () => validateField(el));
-    el.addEventListener('input', () => {
+    el.addEventListener('blur',   () => validateField(el));
+    el.addEventListener('change', () => validateField(el));
+    el.addEventListener('input',  () => {
       if (el.closest('.athos-form-group')?.classList.contains('is-invalid')) validateField(el);
     });
   });
