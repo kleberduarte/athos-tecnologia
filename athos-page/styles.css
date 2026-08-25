@@ -207,7 +207,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0 clamp(1.25rem, 5vw, 2.5rem);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 1.5rem;
 }
 
@@ -1596,12 +1596,13 @@ a { color: inherit; text-decoration: none; }
 /* ——— Robot Support Widget ——— */
 .robot-widget {
   position: fixed !important;
-  bottom: 8rem;
-  right: 1.5rem;
+  bottom: 2rem;
+  left: 1.5rem;
+  right: auto;
   z-index: 9100 !important;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .robot-toggle {
@@ -1679,16 +1680,17 @@ a { color: inherit; text-decoration: none; }
 .robot-bubble {
   position: absolute;
   bottom: calc(100% + 0.85rem);
-  right: 0;
+  left: 0;
+  right: auto;
   width: 210px;
   background: var(--card);
   border: 1px solid var(--accent);
-  border-radius: 12px 12px 4px 12px;
+  border-radius: 12px 12px 12px 4px;
   padding: 1.1rem 1rem 1rem;
   box-shadow: var(--glow), 0 8px 32px rgba(0,0,0,.6);
   opacity: 0;
   transform: translateY(10px) scale(0.94);
-  transform-origin: bottom right;
+  transform-origin: bottom left;
   pointer-events: none;
   transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
 }

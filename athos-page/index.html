@@ -65,11 +65,11 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 
   <!-- Robot widget + modal (inline para garantir deploy independente de cache) -->
   <style>
-.robot-widget{position:fixed!important;bottom:8rem;right:1.5rem;z-index:9100!important;display:flex;flex-direction:column;align-items:center}
+.robot-widget{position:fixed!important;bottom:2rem;left:1.5rem;right:auto;z-index:9100!important;display:flex;flex-direction:column;align-items:flex-start}
 .robot-toggle{position:relative;width:72px;height:72px;border-radius:50%;background:var(--card);border:2px solid var(--accent);box-shadow:var(--glow);cursor:pointer;outline:none;display:flex;align-items:center;justify-content:center;animation:robotFloat 3s ease-in-out infinite;transition:box-shadow .3s var(--ease);flex-shrink:0}
 .robot-toggle:hover{box-shadow:var(--glow-lg)}
 .robot-antenna{position:absolute;top:-15px;width:3px;height:12px;background:var(--accent);border-radius:2px;box-shadow:var(--glow-sm)}
@@ -80,7 +80,7 @@
 .robot-eye{width:12px;height:10px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm);animation:robotBlink 4s ease-in-out infinite}
 .robot-eye:nth-child(2){animation-delay:.08s}
 .robot-mouth{width:26px;height:3px;border-radius:2px;background:var(--accent);box-shadow:var(--glow-sm)}
-.robot-bubble{position:absolute;bottom:calc(100% + .85rem);right:0;width:210px;background:var(--card);border:1px solid var(--accent);border-radius:12px 12px 4px 12px;padding:1.1rem 1rem 1rem;box-shadow:var(--glow),0 8px 32px rgba(0,0,0,.6);opacity:0;transform:translateY(10px) scale(.94);transform-origin:bottom right;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+.robot-bubble{position:absolute;bottom:calc(100% + .85rem);left:0;right:auto;width:210px;background:var(--card);border:1px solid var(--accent);border-radius:12px 12px 12px 4px;padding:1.1rem 1rem 1rem;box-shadow:var(--glow),0 8px 32px rgba(0,0,0,.6);opacity:0;transform:translateY(10px) scale(.94);transform-origin:bottom left;pointer-events:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
 .robot-bubble.is-open{opacity:1;transform:translateY(0) scale(1);pointer-events:all}
 .robot-bubble__close{position:absolute;top:.35rem;right:.5rem;background:transparent;border:none;color:var(--muted-fg);font-size:1.1rem;line-height:1;cursor:pointer;padding:0;transition:color .2s}
 .robot-bubble__close:hover{color:var(--accent)}
@@ -130,16 +130,11 @@
   </script> -->
 </head>
 <body>
-  <a class="skip-link" href="#inicio">Pular para o conteúdo</a>
-
   <!-- Logo background -->
   <div class="athos-logo-bg" aria-hidden="true"></div>
 
   <header class="athos-header" id="siteHeader">
     <div class="athos-header__bar">
-      <a href="#inicio" class="athos-logo-link" aria-label="Athos Tecnologia — início">
-        ATHOS
-      </a>
       <button type="button" class="athos-nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -152,7 +147,6 @@
           <li><a href="#contato">Contato</a></li>
         </ul>
       </nav>
-      <a class="athos-header__cta d-none d-lg-inline-flex" href="#contato">Fale conosco</a>
     </div>
   </header>
   <div id="navOverlay"></div>
@@ -182,7 +176,7 @@
           <div class="col-lg-7 col-xl-6">
             <p class="athos-hero__eyebrow">Arquitetura · Dados · Produtos Digitais</p>
             <h1 class="athos-hero__title">
-              Engenharia<br />para demandas<br /><span class="athos-highlight">exigentes</span>
+              <span style="white-space:nowrap">Engenharia <span class="athos-highlight">IA</span></span><br />para demandas<br /><span class="athos-highlight">exigentes</span>
             </h1>
             <p class="athos-hero__lead">
               Desenvolvemos soluções digitais com profundidade técnica, segurança e escala.
@@ -506,7 +500,7 @@
             <p class="athos-text mt-3">
               Atuamos em projetos de alta complexidade, com equipes especializadas e metodologia rigorosa. Do levantamento de requisitos à operação em produção, somos parceiros de longo prazo.
             </p>
-            <a class="athos-btn athos-btn--primary mt-4 d-inline-flex" href="#contato">Fale com um especialista</a>
+
           </div>
           <div class="col-lg-7">
             <div class="row g-3">
@@ -602,13 +596,15 @@
             <form
               class="athos-contact-form"
               id="contactForm"
-              action="https://formspree.io/f/YOUR_FORM_ID"
+              action="https://formsubmit.co/contato@athostecnologia.com.br"
               method="POST"
               novalidate
               aria-label="Formulário de contato"
             >
               <!-- Honeypot anti-spam (oculto para usuários) -->
               <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off" />
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
 
               <div class="row g-3">
                 <div class="col-md-6">
@@ -703,7 +699,7 @@
             <!-- Estado de sucesso -->
             <div id="cfSuccess" class="athos-form-feedback athos-form-feedback--success" hidden role="status" aria-live="polite">
               <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <p>Mensagem enviada com sucesso! Retornaremos em até <strong>24h úteis</strong>.</p>
+              <p>Retornaremos em breve, obrigado pelo contato :)</p>
             </div>
 
             <!-- Estado de erro -->
@@ -747,6 +743,7 @@
           <p>Olá! 👋</p>
           <p>Seja bem-vindo à <strong>Athos Tecnologia</strong>.</p>
           <p>Como podemos te ajudar hoje?</p>
+          <p>Entre em contato no nosso e-mail:<br><a href="mailto:contato@athostecnologia.com.br" style="color:#00ff88;font-weight:600;word-break:break-all;">contato@athostecnologia.com.br</a></p>
           <span class="wa-modal__time">agora</span>
         </div>
       </div>
