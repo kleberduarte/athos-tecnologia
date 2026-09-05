@@ -93,7 +93,7 @@
 @keyframes antennaPulse{0%,100%{opacity:1}50%{opacity:.3}}
 .rmodal-overlay{position:fixed!important;inset:0;z-index:9500!important;background:rgba(10,10,15,.88);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s var(--ease),visibility .35s}
 .rmodal-overlay.is-open{opacity:1;visibility:visible;pointer-events:all}
-.rmodal-box{position:relative;background:var(--card);border:1px solid var(--accent);box-shadow:var(--glow-lg),0 24px 64px rgba(0,0,0,.8);clip-path:polygon(0 var(--chamfer),var(--chamfer) 0,calc(100% - var(--chamfer)) 0,100% var(--chamfer),100% calc(100% - var(--chamfer)),calc(100% - var(--chamfer)) 100%,var(--chamfer) 100%,0 calc(100% - var(--chamfer)));padding:2.5rem 2rem 2rem;max-width:420px;width:100%;text-align:center;transform:translateY(20px) scale(.95);transition:transform .35s var(--ease)}
+.rmodal-box{position:relative;background:var(--card);border:1px solid var(--accent);box-shadow:var(--glow-lg),0 24px 64px rgba(0,0,0,.8);clip-path:polygon(0 var(--chamfer),var(--chamfer) 0,calc(100% - var(--chamfer)) 0,100% var(--chamfer),100% calc(100% - var(--chamfer)),calc(100% - var(--chamfer)) 100%,var(--chamfer) 100%,0 calc(100% - var(--chamfer)));padding:0;overflow:hidden;max-width:420px;width:100%;text-align:center;transform:translateY(20px) scale(.95);transition:transform .35s var(--ease)}
 .rmodal-overlay.is-open .rmodal-box{transform:translateY(0) scale(1)}
 .rmodal-accent{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),var(--accent-cyan),transparent);opacity:.8}
 .rmodal-close{position:absolute;top:.75rem;right:.9rem;background:transparent;border:none;color:var(--muted-fg);font-size:1.3rem;line-height:1;cursor:pointer;padding:.2rem .4rem;transition:color .2s}
@@ -118,6 +118,22 @@
 .rmodal-cta{display:inline-flex;align-items:center;justify-content:center;padding:.7rem 1.75rem;background:var(--accent);color:var(--background);font-family:var(--font-label);font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 var(--chamfer-sm),var(--chamfer-sm) 0,calc(100% - var(--chamfer-sm)) 0,100% var(--chamfer-sm),100% calc(100% - var(--chamfer-sm)),calc(100% - var(--chamfer-sm)) 100%,var(--chamfer-sm) 100%,0 calc(100% - var(--chamfer-sm)));transition:filter .2s,box-shadow .2s}
 .rmodal-cta:hover{filter:brightness(1.1);box-shadow:var(--glow);color:var(--background)}
 @keyframes progressPulse{0%,100%{width:62%}50%{width:74%}}
+.rmodal-scroll{padding:2.5rem 2rem 2rem;overflow-y:auto;max-height:88vh;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+.rmodal-scroll::-webkit-scrollbar{width:3px}
+.rmodal-scroll::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+.rmodal-form{text-align:left;margin-top:.5rem}
+.rmodal-field{margin-bottom:.55rem}
+.rmodal-field--row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.rmodal-field input,.rmodal-field select,.rmodal-field textarea{width:100%;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--foreground);font-family:var(--font);font-size:.75rem;padding:.5rem .7rem;outline:none;transition:border-color .2s;clip-path:polygon(0 4px,4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px))}
+.rmodal-field input::placeholder,.rmodal-field textarea::placeholder{color:var(--muted-fg);font-family:var(--font-label);font-size:.68rem}
+.rmodal-field input:focus,.rmodal-field select:focus,.rmodal-field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 1px rgba(0,255,136,.2)}
+.rmodal-field select{cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2300ff88' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .7rem center;background-color:rgba(0,0,0,.4);padding-right:2rem}
+.rmodal-field select option{background:#12121a}
+.rmodal-field textarea{resize:none}
+.rmodal-field input.rm-invalid,.rmodal-field select.rm-invalid,.rmodal-field textarea.rm-invalid{border-color:var(--destructive)!important;box-shadow:0 0 0 1px rgba(255,51,102,.2)}
+.rmodal-field-hint{font-family:var(--font-label);font-size:.6rem;color:var(--muted-fg);letter-spacing:.06em;margin:.05rem 0 .7rem;line-height:1.5;display:block}
+.rmodal-cta--full{display:block;width:100%;text-align:center;margin-top:.25rem}
+@media(max-width:400px){.rmodal-field--row{grid-template-columns:1fr}}
   </style>
 
   <!-- Google Analytics 4 — substitua G-XXXXXXXXXX pelo seu Measurement ID -->
@@ -741,37 +757,89 @@
     </button>
   </div>
 
-  <!-- Modal Em Construção -->
+  <!-- Modal Chamado de Suporte -->
   <div id="robotModal" class="rmodal-overlay" role="dialog" aria-modal="true" aria-labelledby="rmodalTitle">
     <div class="rmodal-box">
       <div class="rmodal-accent"></div>
       <button class="rmodal-close" id="robotModalClose" aria-label="Fechar">×</button>
 
-      <div class="rmodal-robot" aria-hidden="true">
-        <span class="rmodal-robot__antenna rmodal-robot__antenna--l"></span>
-        <span class="rmodal-robot__antenna rmodal-robot__antenna--r"></span>
-        <span class="rmodal-robot__face">
-          <span class="rmodal-robot__eyes">
-            <span class="rmodal-robot__eye"></span>
-            <span class="rmodal-robot__eye"></span>
+      <div class="rmodal-scroll">
+
+        <div class="rmodal-robot" aria-hidden="true">
+          <span class="rmodal-robot__antenna rmodal-robot__antenna--l"></span>
+          <span class="rmodal-robot__antenna rmodal-robot__antenna--r"></span>
+          <span class="rmodal-robot__face">
+            <span class="rmodal-robot__eyes">
+              <span class="rmodal-robot__eye"></span>
+              <span class="rmodal-robot__eye"></span>
+            </span>
+            <span class="rmodal-robot__mouth"></span>
           </span>
-          <span class="rmodal-robot__mouth"></span>
-        </span>
+        </div>
+
+        <!-- View: Formulário -->
+        <div id="rmodalFormView">
+          <p class="rmodal-label">// SUPORTE TÉCNICO</p>
+          <h2 class="rmodal-title" id="rmodalTitle">ABRIR<br><span>CHAMADO</span></h2>
+
+          <form id="rmodalForm" class="rmodal-form" novalidate>
+            <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off"/>
+            <input type="hidden" name="_subject" value="[CHAMADO] Novo chamado de suporte — Athos Tecnologia"/>
+            <input type="hidden" name="_template" value="table"/>
+
+            <div class="rmodal-field">
+              <input type="text" id="rm-nome" name="nome" placeholder="Nome completo" required minlength="3" maxlength="100"/>
+            </div>
+            <div class="rmodal-field">
+              <input type="email" id="rm-email" name="email" placeholder="E-mail corporativo" required maxlength="254"/>
+            </div>
+            <div class="rmodal-field rmodal-field--row">
+              <input type="text" id="rm-empresa" name="empresa" placeholder="Empresa" required minlength="2" maxlength="100"/>
+              <input type="text" id="rm-codigo" name="codigo_cliente" placeholder="Cód. do cliente" required maxlength="50"/>
+            </div>
+            <div class="rmodal-field">
+              <select id="rm-produto" name="produto" required>
+                <option value="">Produto afetado...</option>
+                <option>BarberFlow</option>
+                <option>MDMTrack</option>
+                <option>OdontoClinica</option>
+                <option>Estacione</option>
+                <option>Cardtrack</option>
+                <option>Console de Chamados</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="rmodal-field">
+              <select id="rm-severidade" name="severidade" required>
+                <option value="">Severidade...</option>
+                <option value="Baixa">Baixa — dúvida / melhoria</option>
+                <option value="Média">Média — sistema instável</option>
+                <option value="Crítica">Crítica — fora do ar</option>
+              </select>
+            </div>
+            <div class="rmodal-field">
+              <textarea id="rm-descricao" name="descricao" placeholder="Descreva o problema..." required minlength="20" maxlength="1000" rows="3"></textarea>
+            </div>
+            <span class="rmodal-field-hint">Código fornecido pela Athos no contrato. Não tem? Use o formulário de contato abaixo.</span>
+            <button type="submit" class="rmodal-cta rmodal-cta--full" id="rmodalSubmitBtn">Abrir chamado</button>
+          </form>
+        </div>
+
+        <!-- View: Sucesso -->
+        <div id="rmodalSuccessView" hidden>
+          <p class="rmodal-label">// CHAMADO REGISTRADO</p>
+          <h2 class="rmodal-title">OK<br><span>RECEBIDO</span></h2>
+          <p class="rmodal-text">Protocolo: <strong id="rmodalProtocol" style="color:var(--accent)"></strong><br><br>Nossa equipe retorna em até <strong style="color:var(--accent-cyan)">2 horas úteis</strong>. Fique atento ao seu e-mail.</p>
+          <button class="rmodal-cta rmodal-cta--full" id="robotModalCta">Fechar</button>
+        </div>
+
+        <!-- View: Erro -->
+        <div id="rmodalErrorView" hidden>
+          <p class="rmodal-text" style="color:var(--destructive);margin-bottom:1rem">Falha ao registrar o chamado. Tente novamente ou contate diretamente:<br><a href="mailto:contato@athostecnologia.com.br" style="color:var(--accent);word-break:break-all">contato@athostecnologia.com.br</a></p>
+          <button class="rmodal-cta rmodal-cta--full" id="rmodalRetryBtn">Tentar novamente</button>
+        </div>
+
       </div>
-
-      <p class="rmodal-label">// STATUS DO SISTEMA</p>
-      <h2 class="rmodal-title" id="rmodalTitle">EM<br><span>CONSTRUÇÃO</span></h2>
-      <p class="rmodal-text">
-        Estamos desenvolvendo o console de chamados para que você possa abrir e acompanhar seus atendimentos diretamente por aqui.<br><br>
-        Em breve nosso suporte estará totalmente disponível online.
-      </p>
-
-      <div class="rmodal-progress" aria-hidden="true">
-        <div class="rmodal-progress__bar"></div>
-      </div>
-      <p class="rmodal-eta">desenvolvimento em andamento — <strong>lançamento em breve</strong></p>
-
-      <a href="#contato" class="rmodal-cta" id="robotModalCta">Falar com a equipe agora</a>
     </div>
   </div>
 
@@ -787,18 +855,84 @@
   <script src="main.js"></script>
   <script>
 (function(){
-  var toggle=document.getElementById('robotToggle'),bubble=document.getElementById('robotBubble'),bClose=document.getElementById('robotClose'),chamado=document.getElementById('robotChamadoBtn'),modal=document.getElementById('robotModal'),mClose=document.getElementById('robotModalClose'),mCta=document.getElementById('robotModalCta');
+  var toggle=document.getElementById('robotToggle'),
+      bubble=document.getElementById('robotBubble'),
+      bClose=document.getElementById('robotClose'),
+      chamadoBtn=document.getElementById('robotChamadoBtn'),
+      modal=document.getElementById('robotModal'),
+      mClose=document.getElementById('robotModalClose'),
+      form=document.getElementById('rmodalForm'),
+      formView=document.getElementById('rmodalFormView'),
+      successView=document.getElementById('rmodalSuccessView'),
+      errorView=document.getElementById('rmodalErrorView'),
+      submitBtn=document.getElementById('rmodalSubmitBtn'),
+      protocolEl=document.getElementById('rmodalProtocol'),
+      ctaClose=document.getElementById('robotModalCta'),
+      retryBtn=document.getElementById('rmodalRetryBtn');
+
   if(!toggle||!bubble||!modal)return;
-  function openModal(){bubble.classList.remove('is-open');modal.classList.add('is-open');mClose.focus();}
+
+  function openModal(){
+    bubble.classList.remove('is-open');
+    modal.classList.add('is-open');
+    mClose.focus();
+    resetModal();
+  }
   function closeModal(){modal.classList.remove('is-open');}
+  function resetModal(){
+    if(formView)formView.hidden=false;
+    if(successView)successView.hidden=true;
+    if(errorView)errorView.hidden=true;
+    if(form){form.reset();form.querySelectorAll('.rm-invalid').forEach(function(el){el.classList.remove('rm-invalid');});}
+    if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Abrir chamado';}
+  }
+  function genProtocol(){return 'ATH-'+Date.now().toString(36).toUpperCase().slice(-6);}
+  function validateField(el){var ok=el.checkValidity();el.classList.toggle('rm-invalid',!ok);return ok;}
+
+  if(form){
+    var liveFields=form.querySelectorAll('input:not([name="_honey"]):not([type="hidden"]),select,textarea');
+    liveFields.forEach(function(el){
+      el.addEventListener('blur',function(){validateField(el);});
+      el.addEventListener('input',function(){if(el.classList.contains('rm-invalid'))validateField(el);});
+      el.addEventListener('change',function(){if(el.classList.contains('rm-invalid'))validateField(el);});
+    });
+    form.addEventListener('submit',function(e){
+      e.preventDefault();
+      var fields=[].slice.call(liveFields);
+      var allValid=fields.map(function(f){return validateField(f);}).every(Boolean);
+      if(!allValid){var first=form.querySelector('.rm-invalid');if(first)first.focus();return;}
+      submitBtn.disabled=true;
+      submitBtn.textContent='Enviando...';
+      if(errorView)errorView.hidden=true;
+      fetch('https://formsubmit.co/ajax/contato@athostecnologia.com.br',{
+        method:'POST',body:new FormData(form),headers:{Accept:'application/json'}
+      }).then(function(r){if(!r.ok)throw new Error();return r.json();})
+      .then(function(){
+        if(protocolEl)protocolEl.textContent=genProtocol();
+        if(formView)formView.hidden=true;
+        if(successView)successView.hidden=false;
+      })
+      .catch(function(){
+        if(errorView)errorView.hidden=false;
+        submitBtn.disabled=false;
+        submitBtn.textContent='Abrir chamado';
+      });
+    });
+  }
+
+  if(retryBtn)retryBtn.addEventListener('click',function(){
+    if(errorView)errorView.hidden=true;
+    if(submitBtn){submitBtn.disabled=false;submitBtn.textContent='Abrir chamado';}
+  });
+
   setTimeout(function(){bubble.classList.add('is-open');},2500);
   toggle.addEventListener('click',function(){bubble.classList.toggle('is-open');});
   bClose.addEventListener('click',function(e){e.stopPropagation();bubble.classList.remove('is-open');});
-  chamado.addEventListener('click',openModal);
+  chamadoBtn.addEventListener('click',openModal);
   mClose.addEventListener('click',closeModal);
   modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
-  mCta.addEventListener('click',closeModal);
+  if(ctaClose)ctaClose.addEventListener('click',closeModal);
 })();
   </script>
 </body>
