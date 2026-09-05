@@ -939,11 +939,11 @@ a { color: inherit; text-decoration: none; }
 .reveal .col-md-6:nth-child(4), .reveal .col-md-4:nth-child(4), .reveal .col-lg-3:nth-child(4) { transition-delay: 240ms; }
 
 /* Scroll anchor offset */
-#servicos, #automacao, #segmentos, #sobre, #diferenciais, #contato {
+#servicos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
   scroll-margin-top: calc(var(--header-h) + 8px);
 }
 @media (max-width: 768px) {
-  #servicos, #automacao, #segmentos, #sobre, #diferenciais, #contato {
+  #servicos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
     scroll-margin-top: 84px;
   }
   .athos-hero {
@@ -985,135 +985,87 @@ a { color: inherit; text-decoration: none; }
   z-index: 0;
 }
 
-/* ——— YEP Partner Badge ——— */
-.athos-yep-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.35rem 0.9rem;
-  border: 1px solid rgba(0,212,255,.35);
-  clip-path: polygon(0 4px, 4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px));
+/* ——— Stack & Tecnologias ——— */
+.athos-stack-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2.25rem;
+}
+
+.athos-stack-group__label {
   font-family: var(--font-label);
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent-cyan);
-  background: rgba(0,212,255,.05);
-}
-.athos-yep-badge svg { width: 14px; height: 14px; color: var(--accent-cyan); }
-
-/* ——— YEP Cards (cyan variant) ——— */
-.athos-card--yep {
-  border-color: rgba(0,212,255,.18);
-}
-.athos-card--yep .athos-card__icon { color: var(--accent-cyan); }
-.athos-card--yep::before {
-  background: linear-gradient(90deg, transparent, rgba(0,212,255,.15), transparent);
-}
-.athos-card--yep:hover {
-  border-color: var(--accent-cyan);
-  filter: drop-shadow(0 0 10px rgba(0,212,255,.35));
-}
-.athos-card--yep:hover .athos-card__icon {
-  filter: drop-shadow(0 0 5px rgba(0,212,255,.65));
-}
-.athos-card--yep:hover::before {
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-}
-
-/* ——— Locação Banner ——— */
-.athos-locacao-banner {
-  background: var(--muted);
-  border: 1px solid rgba(0,212,255,.2);
-  clip-path: polygon(
-    0 var(--chamfer), var(--chamfer) 0,
-    calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
-    100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
-    var(--chamfer) 100%, 0 calc(100% - var(--chamfer))
-  );
-  padding: clamp(2rem, 4vw, 3rem);
-  margin-top: 1rem;
-  position: relative;
-  overflow: hidden;
-}
-
-.athos-locacao-banner::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-  opacity: 0.5;
-  pointer-events: none;
-}
-
-.athos-locacao-banner__eyebrow {
-  font-family: var(--font-label);
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--accent-cyan);
-  margin-bottom: 0.5rem;
-}
-
-.athos-locacao-banner__title {
-  font-family: var(--font-brand);
-  font-size: clamp(1.05rem, 2.5vw, 1.45rem);
-  font-weight: 700;
-  color: var(--foreground);
-  line-height: 1.3;
+  color: var(--accent);
   margin-bottom: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  padding-left: 0.75rem;
+  border-left: 2px solid var(--accent);
+  line-height: 1;
 }
 
-.athos-locacao-banner__text {
-  color: var(--muted-fg);
-  font-size: 0.875rem;
-  line-height: 1.85;
-  max-width: 52ch;
-}
-
-.athos-locacao-banner__cta {
+.athos-stack-pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
-/* ——— Locação Stats (cyan) ——— */
-.athos-locacao-stat {
-  background: rgba(0,212,255,.04);
-  border: 1px solid rgba(0,212,255,.2);
+.athos-stack-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.05rem;
+  background: var(--card);
+  border: 1px solid var(--border);
   clip-path: polygon(
     0 var(--chamfer-sm), var(--chamfer-sm) 0,
     calc(100% - var(--chamfer-sm)) 0, 100% var(--chamfer-sm),
     100% calc(100% - var(--chamfer-sm)), calc(100% - var(--chamfer-sm)) 100%,
     var(--chamfer-sm) 100%, 0 calc(100% - var(--chamfer-sm))
   );
-  padding: 1rem;
+  transition: border-color 0.2s, filter 0.2s, transform 0.2s var(--ease-out);
+  cursor: default;
+  user-select: none;
+}
+
+.athos-stack-pill:hover {
+  border-color: var(--accent);
+  filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3));
+  transform: translateY(-2px);
+}
+
+.athos-stack-pill__icon {
+  width: 22px;
+  height: 22px;
+  color: var(--accent);
+  flex-shrink: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.athos-locacao-stat__num {
-  font-family: var(--font-brand);
-  font-size: 1.55rem;
-  font-weight: 700;
-  color: var(--accent-cyan);
-  text-shadow: 0 0 16px rgba(0,212,255,.4);
-  line-height: 1;
+.athos-stack-pill__icon svg {
+  width: 100%;
+  height: 100%;
 }
 
-.athos-locacao-stat__label {
+.athos-stack-pill__name {
   font-family: var(--font-label);
-  font-size: 0.65rem;
-  color: var(--muted-fg);
-  line-height: 1.4;
+  font-size: 0.76rem;
+  font-weight: 600;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.athos-stack-pill--ai .athos-stack-pill__icon {
+  color: var(--accent-cyan);
+}
+
+.athos-stack-pill--ai:hover {
+  border-color: var(--accent-cyan);
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.3));
 }
 
 /* ——— Segmentos (magenta variant) ——— */
@@ -1187,10 +1139,10 @@ a { color: inherit; text-decoration: none; }
   padding: 0.2rem 0.6rem;
 }
 
-/* ——— Diferencial YEP card ——— */
-.athos-diff--yep {
-  background: rgba(0,212,255,.03);
-  border: 1px solid rgba(0,212,255,.22) !important;
+/* ——— Diferencial AI card ——— */
+.athos-diff--ai {
+  background: rgba(0, 212, 255, .03);
+  border: 1px solid rgba(0, 212, 255, .22) !important;
   border-top: none !important;
   clip-path: polygon(
     0 var(--chamfer-sm), var(--chamfer-sm) 0,
@@ -1200,8 +1152,12 @@ a { color: inherit; text-decoration: none; }
   );
   padding: 1.5rem 1.25rem;
 }
-.athos-diff--yep .athos-diff__title { color: var(--accent-cyan); }
-.athos-diff__line--yep {
+
+.athos-diff--ai .athos-diff__title {
+  color: var(--accent-cyan);
+}
+
+.athos-diff__line--ai {
   background: var(--accent-cyan) !important;
   box-shadow: var(--glow-cyan) !important;
 }
@@ -1395,9 +1351,16 @@ a { color: inherit; text-decoration: none; }
 .athos-whatsapp-btn:hover .athos-whatsapp-btn__tooltip { opacity: 1; }
 
 
-@media (max-width: 767px) {
-  .athos-locacao-banner__cta { flex-direction: column; }
-  .athos-locacao-banner__cta .athos-btn { width: 100%; justify-content: center; }
+/* ——— Stack & Tecnologias — responsivo mobile ——— */
+@media (max-width: 575px) {
+  .athos-stack-wrapper { gap: 1.75rem; }
+  .athos-stack-pill {
+    padding: 0.5rem 0.85rem;
+    gap: 0.45rem;
+  }
+  .athos-stack-pill__icon { width: 20px; height: 20px; }
+  .athos-stack-pill__name { font-size: 0.71rem; letter-spacing: 0.04em; }
+  .athos-stack-pills { gap: 0.5rem; }
 }
 
 /* ——— Skip Link (acessibilidade) ——— */
