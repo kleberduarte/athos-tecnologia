@@ -583,6 +583,7 @@
               <!-- Honeypot anti-spam (oculto para usuários) -->
               <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off" />
               <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_subject" value="[CONTATO] Nova mensagem pelo site — Athos Tecnologia"/>
               <input type="hidden" name="_template" value="table">
 
               <div class="row g-3">
@@ -786,6 +787,7 @@
             <input type="text" name="_honey" aria-hidden="true" tabindex="-1" style="display:none" autocomplete="off"/>
             <input type="hidden" name="_subject" value="[CHAMADO] Novo chamado de suporte — Athos Tecnologia"/>
             <input type="hidden" name="_template" value="table"/>
+            <input type="hidden" name="protocolo" id="rm-protocolo"/>
 
             <div class="rmodal-field">
               <input type="text" id="rm-nome" name="nome" placeholder="Nome completo" required minlength="3" maxlength="100"/>
@@ -795,7 +797,7 @@
             </div>
             <div class="rmodal-field rmodal-field--row">
               <input type="text" id="rm-empresa" name="empresa" placeholder="Empresa" required minlength="2" maxlength="100"/>
-              <input type="text" id="rm-codigo" name="codigo_cliente" placeholder="Cód. do cliente" required maxlength="50"/>
+              <input type="text" id="rm-cnpj" name="cnpj" placeholder="CNPJ (4 primeiros dígitos)" required pattern="[0-9]{4}" minlength="4" maxlength="4" inputmode="numeric"/>
             </div>
             <div class="rmodal-field">
               <select id="rm-produto" name="produto" required>
@@ -904,11 +906,14 @@
       submitBtn.disabled=true;
       submitBtn.textContent='Enviando...';
       if(errorView)errorView.hidden=true;
+      var protocol=genProtocol();
+      var protocolInput=document.getElementById('rm-protocolo');
+      if(protocolInput)protocolInput.value=protocol;
       fetch('https://formsubmit.co/ajax/contato@athostecnologia.com.br',{
         method:'POST',body:new FormData(form),headers:{Accept:'application/json'}
       }).then(function(r){if(!r.ok)throw new Error();return r.json();})
       .then(function(){
-        if(protocolEl)protocolEl.textContent=genProtocol();
+        if(protocolEl)protocolEl.textContent=protocol;
         if(formView)formView.hidden=true;
         if(successView)successView.hidden=false;
       })
