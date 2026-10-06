@@ -868,6 +868,16 @@
           </span>
         </div>
 
+        <!-- View: Em construção (exibida enquanto CHAMADOS_ATIVOS=false no script abaixo) -->
+        <div id="rmodalBuildView" hidden>
+          <p class="rmodal-label">// SUPORTE TÉCNICO</p>
+          <h2 class="rmodal-title" id="rmodalBuildTitle">EM<br><span>CONSTRUÇÃO</span></h2>
+          <p class="rmodal-text">Estamos em construção. Logo atenderemos seu chamado por aqui.<br><br>Enquanto isso, fale com a gente pelo e-mail<br><a href="mailto:contato@athostecnologia.com.br" style="color:var(--accent);word-break:break-all">contato@athostecnologia.com.br</a></p>
+          <div class="rmodal-progress" aria-hidden="true"><div class="rmodal-progress__bar"></div></div>
+          <p class="rmodal-eta">Portal de chamados · <strong>em breve</strong></p>
+          <button class="rmodal-cta rmodal-cta--full" id="rmodalBuildClose">Fechar</button>
+        </div>
+
         <!-- View: Formulário -->
         <div id="rmodalFormView">
           <p class="rmodal-label">// SUPORTE TÉCNICO</p>
@@ -947,6 +957,7 @@
   <script src="main.js?v=9"></script>
   <script>
 (function(){
+  var CHAMADOS_ATIVOS=false;
   var toggle=document.getElementById('robotToggle'),
       bubble=document.getElementById('robotBubble'),
       bClose=document.getElementById('robotClose'),
@@ -960,7 +971,9 @@
       submitBtn=document.getElementById('rmodalSubmitBtn'),
       protocolEl=document.getElementById('rmodalProtocol'),
       ctaClose=document.getElementById('robotModalCta'),
-      retryBtn=document.getElementById('rmodalRetryBtn');
+      retryBtn=document.getElementById('rmodalRetryBtn'),
+      buildView=document.getElementById('rmodalBuildView'),
+      buildClose=document.getElementById('rmodalBuildClose');
 
   if(!toggle||!bubble||!modal)return;
 
@@ -972,6 +985,16 @@
   }
   function closeModal(){modal.classList.remove('is-open');}
   function resetModal(){
+    if(!CHAMADOS_ATIVOS){
+      if(formView)formView.hidden=true;
+      if(successView)successView.hidden=true;
+      if(errorView)errorView.hidden=true;
+      if(buildView)buildView.hidden=false;
+      modal.setAttribute('aria-labelledby','rmodalBuildTitle');
+      return;
+    }
+    if(buildView)buildView.hidden=true;
+    modal.setAttribute('aria-labelledby','rmodalTitle');
     if(formView)formView.hidden=false;
     if(successView)successView.hidden=true;
     if(errorView)errorView.hidden=true;
@@ -1025,6 +1048,7 @@
   bClose.addEventListener('click',function(e){e.stopPropagation();bubble.classList.remove('is-open');});
   chamadoBtn.addEventListener('click',openModal);
   mClose.addEventListener('click',closeModal);
+  if(buildClose)buildClose.addEventListener('click',closeModal);
   modal.addEventListener('click',function(e){if(e.target===modal)closeModal();});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
   if(ctaClose)ctaClose.addEventListener('click',closeModal);
