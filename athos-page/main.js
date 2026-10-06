@@ -24,23 +24,13 @@ toggle.addEventListener('click', () => {
 overlay.addEventListener('click', closeNav);
 
 nav.querySelectorAll('a').forEach(a => {
-  a.addEventListener('click', (e) => {
+  a.addEventListener('click', () => {
     const href = a.getAttribute('href');
-    if (!href || !href.startsWith('#')) { closeNav(); return; }
-    e.preventDefault();
-    closeNav();
-    setTimeout(() => {
+    if (href && href.startsWith('#')) {
       const target = document.getElementById(href.slice(1));
-      if (!target) return;
-      target.classList.add('is-visible');
-      let top = 0;
-      let node = target;
-      while (node && node !== document.body) {
-        top += node.offsetTop || 0;
-        node = node.offsetParent;
-      }
-      window.scrollTo(0, Math.max(0, top - 84));
-    }, 100);
+      if (target) target.classList.add('is-visible');
+    }
+    closeNav();
   });
 });
 
@@ -259,3 +249,21 @@ if (y) y.textContent = new Date().getFullYear();
     }
   });
 })();
+
+// ——— Player de vídeo dos produtos ———
+document.querySelectorAll('.athos-player').forEach(player => {
+  const video = player.querySelector('video');
+  const cover = player.querySelector('.athos-player__cover');
+  if (!video || !cover) return;
+
+  cover.addEventListener('click', () => {
+    player.classList.add('is-playing');
+    video.play().catch(() => {});
+    video.focus({ preventScroll: true });
+  });
+
+  video.addEventListener('ended', () => {
+    player.classList.remove('is-playing');
+    video.currentTime = 0;
+  });
+});

@@ -1,6 +1,9 @@
 # Deploy artifacts
 *.zip
 
+# Vídeos de produto (vão somente no ZIP de deploy da Hostinger)
+athos-page/produtos/*.mp4
+
 # OS
 .DS_Store
 Thumbs.db

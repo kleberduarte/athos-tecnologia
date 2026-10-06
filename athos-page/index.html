@@ -65,7 +65,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="styles.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=7" />
 
   <!-- Robot widget + modal (inline para garantir deploy independente de cache) -->
   <style>
@@ -157,6 +157,7 @@
       <nav class="athos-nav" id="mainNav" aria-label="Principal">
         <ul>
           <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#produtos">Produtos</a></li>
           <li><a href="#tecnologias">Tecnologias</a></li>
           <li><a href="#sobre">Sobre</a></li>
           <li><a href="#diferenciais">Diferenciais</a></li>
@@ -273,6 +274,95 @@
             </article>
           </div>
         </div>
+      </div>
+    </section>
+
+    <div class="athos-divider"></div>
+
+    <!-- Produtos -->
+    <section class="athos-section reveal" id="produtos">
+      <div class="container-athos">
+        <div class="athos-section__head text-center mb-5">
+          <p class="athos-section__eyebrow">Produtos Athos</p>
+          <h2 class="athos-section__title">Nossos Produtos</h2>
+          <p class="athos-section__sub">Plataformas próprias, prontas para operar no seu negócio</p>
+        </div>
+
+        <article class="athos-produto">
+          <div class="row g-4 g-lg-5 align-items-center">
+            <div class="col-lg-7">
+              <div class="athos-player" id="athosTrackPlayer">
+                <video class="athos-player__video" preload="none" playsinline controls>
+                  <source src="produtos/Athos_Track_Apresentacao1.mp4" type="video/mp4" />
+                  Seu navegador não suporta vídeo. <a href="produtos/Athos_Track_Apresentacao1.mp4">Baixe a apresentação</a>.
+                </video>
+                <button type="button" class="athos-player__cover" aria-label="Assistir apresentação do Athos Track, 4 minutos e 20 segundos">
+                  <svg class="athos-player__radar" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <circle cx="200" cy="200" r="190" stroke="rgba(0,255,136,.14)" stroke-width="1"/>
+                    <circle cx="200" cy="200" r="140" stroke="rgba(0,255,136,.12)" stroke-width="1"/>
+                    <circle cx="200" cy="200" r="90"  stroke="rgba(0,255,136,.1)"  stroke-width="1"/>
+                    <circle cx="200" cy="200" r="40"  stroke="rgba(0,255,136,.1)"  stroke-width="1"/>
+                    <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(0,255,136,.07)" stroke-width="1"/>
+                    <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(0,255,136,.07)" stroke-width="1"/>
+                    <path class="athos-player__sweep" d="M200 200 L200 10 A190 190 0 0 1 334 66 Z" fill="url(#radarSweep)"/>
+                    <defs>
+                      <linearGradient id="radarSweep" x1="200" y1="10" x2="334" y2="66" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stop-color="rgba(0,255,136,.28)"/>
+                        <stop offset="1" stop-color="rgba(0,255,136,0)"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="athos-player__ping" cx="282" cy="118" r="5" fill="#00ff88"/>
+                    <circle class="athos-player__ping athos-player__ping--cyan" cx="120" cy="250" r="5" fill="#00d4ff"/>
+                    <circle class="athos-player__ping athos-player__ping--late" cx="250" cy="300" r="5" fill="#00ff88"/>
+                  </svg>
+                  <span class="athos-player__play" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5L8 5.5z"/></svg>
+                  </span>
+                  <span class="athos-player__label">
+                    <span class="athos-player__brand">Athos Track</span>
+                    <span class="athos-player__meta">Assistir apresentação · 4:20</span>
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="col-lg-5">
+              <div class="athos-badge">Rastreamento em tempo real</div>
+              <h3 class="athos-produto__title mt-3">Athos Track</h3>
+              <p class="athos-produto__tagline">Rastreie qualquer coisa, em qualquer lugar.</p>
+              <p class="athos-produto__text">
+                Plataforma de rastreamento global para dispositivos, veículos e patrimônio.
+                Acompanhe a localização dos seus ativos em tempo real e gerencie tudo em um só lugar.
+              </p>
+              <ul class="athos-produto__features">
+                <li><strong>Tempo real</strong> Localização ao vivo de cada ativo rastreado</li>
+                <li><strong>Cobertura global</strong> Acompanhe seus ativos de qualquer lugar do mundo</li>
+                <li><strong>Cadastro completo</strong> Gestão de dispositivos e veículos na plataforma</li>
+                <li><strong>Qualquer ativo</strong> Equipamentos, frotas, patrimônio e até rebanhos</li>
+              </ul>
+
+              <div class="athos-produto__vertical">
+                <div class="athos-produto__vertical-head">
+                  <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M8 40c4-10 10-16 16-16s12 6 16 16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    <path d="M24 24V10M24 10c-4 0-8 3-8 7 4 0 8-3 8-7zM24 14c4 0 8 3 8 7-4 0-8-3-8-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                  </svg>
+                  <h4 class="athos-produto__vertical-title">Athos Agro</h4>
+                </div>
+                <p class="athos-produto__vertical-text">Rastreamento de rebanho pensado para o mundo agro. Saiba onde está cada animal da sua propriedade.</p>
+                <ul class="athos-segmento__tags athos-produto__tags">
+                  <li>Bois</li>
+                  <li>Vacas</li>
+                  <li>Bezerros</li>
+                </ul>
+              </div>
+
+              <div class="athos-produto__actions">
+                <a class="athos-btn athos-btn--primary" href="#contato">Solicitar demonstração</a>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </section>
 
@@ -854,7 +944,7 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <script src="main.js"></script>
+  <script src="main.js?v=9"></script>
   <script>
 (function(){
   var toggle=document.getElementById('robotToggle'),

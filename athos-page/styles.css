@@ -174,9 +174,9 @@ a { color: inherit; text-decoration: none; }
 
 /* ——— Header ——— */
 .athos-header {
-  position: fixed;
+  position: fixed !important;
   top: 0; left: 0; right: 0;
-  z-index: 200;
+  z-index: 200 !important;
   height: var(--header-h);
   overflow-x: hidden;
   transition: background 0.3s var(--ease);
@@ -312,6 +312,7 @@ a { color: inherit; text-decoration: none; }
 
 /* Mobile nav — hambúrguer ativo em ≤768px */
 @media (max-width: 768px) {
+  .athos-header__bar { justify-content: flex-end; }
   .athos-nav-toggle { display: flex; }
   .athos-nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
   .athos-nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
@@ -339,12 +340,14 @@ a { color: inherit; text-decoration: none; }
   .athos-nav a {
     font-size: 0.62rem;
     letter-spacing: 0.1em;
-    padding: 0.45rem 0;
+    padding: 0.75rem 0;
     display: block;
     border-bottom: 1px solid var(--border);
     white-space: normal;
     max-width: 100%;
     overflow: visible;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(0,255,136,0.15);
   }
   .athos-nav li:last-child > a { border-bottom: none; }
 
@@ -939,11 +942,11 @@ a { color: inherit; text-decoration: none; }
 .reveal .col-md-6:nth-child(4), .reveal .col-md-4:nth-child(4), .reveal .col-lg-3:nth-child(4) { transition-delay: 240ms; }
 
 /* Scroll anchor offset */
-#servicos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
+#servicos, #produtos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
   scroll-margin-top: calc(var(--header-h) + 8px);
 }
 @media (max-width: 768px) {
-  #servicos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
+  #servicos, #produtos, #tecnologias, #segmentos, #sobre, #diferenciais, #contato {
     scroll-margin-top: 84px;
   }
   .athos-hero {
@@ -1137,6 +1140,250 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid rgba(255,0,255,.22);
   clip-path: polygon(0 3px, 3px 0, calc(100% - 3px) 0, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0 calc(100% - 3px));
   padding: 0.2rem 0.6rem;
+}
+
+/* ——— Produtos ——— */
+.athos-produto {
+  background: var(--card);
+  border: 1px solid var(--border);
+  clip-path: polygon(
+    0 var(--chamfer), var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
+    100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%, 0 calc(100% - var(--chamfer))
+  );
+  padding: clamp(1rem, 3vw, 2.5rem);
+}
+
+.athos-player {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: var(--background);
+  border: 1px solid rgba(0,255,136,.3);
+  clip-path: polygon(
+    0 var(--chamfer), var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
+    100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%, 0 calc(100% - var(--chamfer))
+  );
+  overflow: hidden;
+}
+
+.athos-player__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.athos-player__cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  width: 100%;
+  border: 0;
+  padding: 1rem;
+  cursor: pointer;
+  color: var(--foreground);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0,255,136,.08), transparent 65%),
+    linear-gradient(rgba(0,255,136,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,255,136,.03) 1px, transparent 1px),
+    var(--background);
+  background-size: auto, 32px 32px, 32px 32px, auto;
+  transition: opacity 0.3s var(--ease);
+}
+.athos-player.is-playing .athos-player__cover {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.athos-player__radar {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 92%;
+  max-width: 420px;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.athos-player__sweep {
+  transform-origin: 200px 200px;
+  animation: radarSweep 4s linear infinite;
+}
+.athos-player__ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: radarPing 2.4s var(--ease-out) infinite;
+}
+.athos-player__ping--cyan { animation-delay: 0.8s; }
+.athos-player__ping--late { animation-delay: 1.6s; }
+
+@keyframes radarSweep {
+  to { transform: rotate(360deg); }
+}
+@keyframes radarPing {
+  0%   { opacity: 1; transform: scale(1); }
+  70%  { opacity: 0.25; transform: scale(2.2); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.athos-player__play {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px; height: 72px;
+  color: var(--background);
+  background: var(--accent);
+  clip-path: polygon(
+    0 var(--chamfer), var(--chamfer) 0,
+    calc(100% - var(--chamfer)) 0, 100% var(--chamfer),
+    100% calc(100% - var(--chamfer)), calc(100% - var(--chamfer)) 100%,
+    var(--chamfer) 100%, 0 calc(100% - var(--chamfer))
+  );
+  transition: filter 0.2s, transform 0.25s var(--ease-out);
+}
+.athos-player__play svg { width: 34px; height: 34px; margin-left: 3px; }
+.athos-player__cover:hover .athos-player__play,
+.athos-player__cover:focus-visible .athos-player__play {
+  filter: drop-shadow(0 0 14px rgba(0,255,136,.85)) brightness(1.06);
+  transform: scale(1.06);
+}
+.athos-player__cover:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+.athos-player__label {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  text-align: center;
+}
+.athos-player__brand {
+  font-family: var(--font-brand);
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  text-shadow: 0 0 18px rgba(0,255,136,.45);
+}
+.athos-player__meta {
+  font-family: var(--font-label);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.athos-produto__title {
+  font-family: var(--font-brand);
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--foreground);
+  margin-bottom: 0.4rem;
+}
+.athos-produto__tagline {
+  font-family: var(--font-label);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin-bottom: 1rem;
+}
+.athos-produto__text {
+  font-size: 0.875rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+}
+
+.athos-produto__features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  gap: 0.7rem;
+}
+.athos-produto__features li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.athos-produto__features li::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0.5em;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  box-shadow: var(--glow-sm);
+}
+.athos-produto__features strong {
+  display: block;
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--foreground);
+}
+
+.athos-produto__vertical {
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.5rem;
+  background: rgba(0,212,255,.04);
+  border: 1px solid rgba(0,212,255,.22);
+  clip-path: polygon(
+    0 var(--chamfer-sm), var(--chamfer-sm) 0,
+    calc(100% - var(--chamfer-sm)) 0, 100% var(--chamfer-sm),
+    100% calc(100% - var(--chamfer-sm)), calc(100% - var(--chamfer-sm)) 100%,
+    var(--chamfer-sm) 100%, 0 calc(100% - var(--chamfer-sm))
+  );
+}
+.athos-produto__vertical-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.5rem;
+  color: var(--accent-cyan);
+}
+.athos-produto__vertical-head svg { width: 28px; height: 28px; flex-shrink: 0; }
+.athos-produto__vertical-title {
+  font-family: var(--font-brand);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  margin: 0;
+}
+.athos-produto__vertical-text {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  margin-bottom: 0.75rem;
+}
+.athos-produto__tags li {
+  color: var(--accent-cyan);
+  background: rgba(0,212,255,.06);
+  border-color: rgba(0,212,255,.25);
+}
+
+.athos-produto__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+
+@media (max-width: 575px) {
+  .athos-player__play { width: 58px; height: 58px; }
+  .athos-player__play svg { width: 28px; height: 28px; }
+  .athos-produto__actions .athos-btn { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .athos-player__sweep,
+  .athos-player__ping { animation: none; }
 }
 
 /* ——— Diferencial AI card ——— */
